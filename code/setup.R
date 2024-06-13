@@ -9,4 +9,4 @@ pacman::p_load(
 )
 
 # R scripts
-source('lectura_datos.R')
+source('code/lectura_datos.R')
