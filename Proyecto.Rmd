@@ -1,0 +1,25 @@
+---
+title: "Proyecto de Contingencias de Vida I"
+author: 
+  - Estudiantes
+  - Erick Venegas Espinoza - C09319
+  - Eduardo López Corella - C24343 
+  - Gerard Gabert Hidalgo - B93096
+  - Javier Hernández Navarro - C13674
+  - Juan Pablo Morgan Sandí - C15319
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    default_style: "dark"
+    downcute_theme: "chaos"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+
+source('code/setup.R')
+```
+
+
