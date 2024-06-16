@@ -90,9 +90,17 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal){
   
   for (i in 1:nrow(Base)){
     if (Base$Sexo[i] == "M"){
-      tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 1, Tabla_mortal)
+      if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "M"){
+        tabla_resultados$anualidad_creciente[i] <- tabla_resultados$anualidad_creciente[i-1]
+      }else {
+        tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 1, Tabla_mortal)
+      }
     } else if (Base$Sexo[i] == "F"){
-      tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 2, Tabla_mortal)
+      if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "F") {
+        tabla_resultados$anualidad_creciente[i] <- tabla_resultados$anualidad_creciente[i-1]
+      }else{
+        tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 2, Tabla_mortal)
+      }
     }
   }
   
@@ -102,9 +110,17 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal){
   
   for (i in 1:nrow(Base)){
     if (Base$Sexo[i] == "M"){
-      tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 1, Tabla_mortal)
+      if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "M"){
+        tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
+      }else{
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 1, Tabla_mortal) 
+      }
     } else if (Base$Sexo[i] == "F"){
-      tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 2, Tabla_mortal)
+      if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "F"){
+        tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
+      }else{
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 2, Tabla_mortal)
+      }
     }
   }
   
@@ -115,7 +131,4 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal){
   return(Primas_individuales)
 }
 
-
 Primas<-Calcula_prima_individuales(Base_empleados,Tablas_mortalidad)
-
-print(Primas)
