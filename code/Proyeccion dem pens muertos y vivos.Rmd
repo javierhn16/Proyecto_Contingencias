@@ -10,7 +10,7 @@ output:
     - someotherpackage
 ---
 
-Como Sexo aparece en la supen como un boleano se hace esta transformación en la base de datos, además de obtener la edad de la persona a usando la fecha de nacimiento 
+# Hay que unificar esto!!!!!!!!!
 ```{r}
 ABC <- read_excel("Base de datos.xlsx") %>%
   mutate(
@@ -18,8 +18,6 @@ ABC <- read_excel("Base de datos.xlsx") %>%
     Sexo = as.numeric(recode(Sexo, 'M' = '1', 'F' = '2'))
   )
 colnames(ABC)[2] <- "Edad"
-
-
 
 SUPEN <- read_excel("tavid2000-2150.xls") %>%
   mutate(across(everything(), as.numeric))
@@ -60,16 +58,10 @@ px_acum <- function(df_ABC, df_SUPEN) {
 }
 ```
 
-
 Usar función para obtener las probabilidades de los individuos de la base de datos de la empresa ABC con las probabilidades de la SUPEN
 ```{r}
 px <- px_acum(ABC, SUPEN)
 ```
-
-
-
-
-
 
 # Proyecciones demográficas
 
