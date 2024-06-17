@@ -10,35 +10,6 @@ output:
     - someotherpackage
 ---
 
-# Cargar librerias y df a utilizar
-```{r}
-# Instalamos y cargamos el paquete rmdformats
-if (!requireNamespace("rmdformats", quietly = TRUE)) {
-  install.packages("rmdformats")
-}
-library(rmdformats)
-
-```
-
-
-
-```{r}
-# Lista de librerías necesarias
-libraries <- c("readxl", "readr", "ggplot2", "tidyverse", "dplyr", "plotly")
-
-# for que verifique que esten descargadas
-for (lib in libraries) {
-  if (!require(lib, character.only = TRUE)) {
-    install.packages(lib, dependencies = TRUE)
-    library(lib, character.only = TRUE)
-  } else {
-    library(lib, character.only = TRUE)
-  }
-}
-```
-
-
-
 Como Sexo aparece en la supen como un boleano se hace esta transformación en la base de datos, además de obtener la edad de la persona a usando la fecha de nacimiento 
 ```{r}
 ABC <- read_excel("Base de datos.xlsx") %>%
@@ -53,9 +24,6 @@ colnames(ABC)[2] <- "Edad"
 SUPEN <- read_excel("tavid2000-2150.xls") %>%
   mutate(across(everything(), as.numeric))
 ```
-
-
-
 
 # Función llamada px_acum para calculo de px acumulado usando funcion de la tarea 4
 ```{r}

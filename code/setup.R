@@ -1,10 +1,13 @@
 
 # Librerías
 pacman::p_load(
+  rmdformats,
+  tidyverse,
+  dplyr,
   readxl,
+  readr,
   ggplot2,
   plotly,
-  dplyr,
   lubridate
 )
 
