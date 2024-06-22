@@ -1,5 +1,6 @@
 
-# Descuenta la anualidad un año para tener la anualidad anual
+
+# Descuenta los pagos mensuales de la pensión un año para tener la anualidad anual
 
 descuento_anual <- function(cantidad){
   
@@ -11,16 +12,18 @@ descuento_anual <- function(cantidad){
   return(suma)
 }
 
-# Función de crecimiento geométrico
+# Función de crecimiento geométrico para la inflación de las primas
 
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
 # lista: tabla de mortalidad 
 
 Ia_Geometrica <- function(x, s, lista){
+  #Dado que todo está en terminos anuales, se puede usar la i así
   i <- 0.04
+  #El v para un año
   v <- 1/(1 + i)
-  # m: Tiempo máximo de pago
+  # m: Tiempo máximo de pago, dado que se retiran a los 65 
   m <- 65 - x
   suma <- 0
   for (t in 1:m){
@@ -29,13 +32,16 @@ Ia_Geometrica <- function(x, s, lista){
   return(suma)
 }
 
-# Función para los beneficios 
+# Función para calcular la esperanza de los beneficios 
 
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
 # lista: tabla de mortalidad 
+# suma_asegurada_activo: Beneficio en caso de ser empleado activo primer año
+# suma_asegurada_pensionado: Beneficio en caso de ser pensionado primer año
+# pension_mensual: Beneficio de la pensión mensual primer año
 
-valor_presente_beneficios <- function(x, s, lista) {
+valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
   # tasa anual
   i <- 0.04
   # Valor Presente en caso de fallecimiento 
@@ -46,21 +52,19 @@ valor_presente_beneficios <- function(x, s, lista) {
   p_x <- 1
   # Auxiliar para conteo del tiempo después de 65 años
   t_p <- 0
-  # Beneficio en caso de ser empleado activo primer año
-  suma_asegurada_activo <- 5000000
-  # Beneficio en caso de ser pensionado primer año
-  suma_asegurada_pensionado <- 1000000
+  
   # Pensión anualizada
-  anualidad_pensión <- descuento_anual(300000)
+  anualidad_pensión <- descuento_anual(pension_mensual)
   
   for (t in 1:(nrow(lista[[s]]) - x)) {
-    #Probabilidad de muerte
+    #Probabilidad de muerte en un año específico
     q_t <- as.double(lista[[s]][x + t - 1, 25 + t - 1])
+    #El v para la cantidad de años transcurridos
     v_t <- (1 / (1 + i))^t
     #Probabilidad de sobrevivencia acumulada
     p_x <- p_x * (1 - q_t)
     
-    #Si la persona es menor de 65 años
+    #Si la persona es menor de 65 años, lo cubre seguro temporal
     if (x + t - 1 < 65) {
       
       VPF <- VPF + suma_asegurada_activo * (1.03)^(t - 1) * v_t * p_x * q_t
@@ -80,31 +84,36 @@ valor_presente_beneficios <- function(x, s, lista) {
   return(VP)
 }
 
+# Función para calculo de primas
+
 #Base : Base de empleados 
 #Tabla_muerte : Lista de las tabla de mortalidad separada por sexo: 1 (hombre), 2 (mujer)
+#suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
+#suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
+#pension_mensual: Plan de pensión mensual
 
-Calcula_prima_individuales <- function (Base, Tabla_mortal){
+Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual){
   # Crecimiento de la prima para cada empleado 
   
-  tabla_resultados <- data.frame(anualidad_creciente = numeric(nrow(Base)))
+  tabla_resultados <- data.frame(anualidad = numeric(nrow(Base)))
   
   for (i in 1:nrow(Base)){
     if (Base$Sexo[i] == "M"){
       if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "M"){
-        tabla_resultados$anualidad_creciente[i] <- tabla_resultados$anualidad_creciente[i-1]
+        tabla_resultados$anualidad[i] <- tabla_resultados$anualidad[i-1]
       }else {
-        tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 1, Tabla_mortal)
+        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$Edad[i], 1, Tabla_mortal)
       }
     } else if (Base$Sexo[i] == "F"){
       if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "F") {
-        tabla_resultados$anualidad_creciente[i] <- tabla_resultados$anualidad_creciente[i-1]
+        tabla_resultados$anualidad[i] <- tabla_resultados$anualidad[i-1]
       }else{
-        tabla_resultados$anualidad_creciente[i] <- Ia_Geometrica(Base$Edad[i], 2, Tabla_mortal)
+        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$Edad[i], 2, Tabla_mortal)
       }
     }
   }
   
-  # Función de resultados beneficios
+  # Esperanza de los Beneficios
   
   tabla_resultados2 <- data.frame(beneficios = numeric(nrow(Base)))
   
@@ -113,22 +122,73 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal){
       if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "M"){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 1, Tabla_mortal) 
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 1, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
       }
     } else if (Base$Sexo[i] == "F"){
       if (Base$Edad[i] == Base$Edad[i-1] && (i-1) > 0 && Base$Sexo[i-1] == "F"){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 2, Tabla_mortal)
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$Edad[i], 2, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
       }
     }
   }
   
   # Resultados de primas 
   
-  Primas_individuales <- data.frame(Empleado = Base$Id, Primas = tabla_resultados2$beneficios / tabla_resultados$anualidad_creciente)
+  Primas_individuales <- data.frame(Empleado = Base$Id,
+                                    Primas = tabla_resultados2$beneficios / tabla_resultados$anualidad,
+                                    vp = tabla_resultados,
+                                    beneficios = tabla_resultados2)
   
   return(Primas_individuales)
 }
 
-Primas<-Calcula_prima_individuales(Base_empleados,Tablas_mortalidad)
+#Punto h
+#Estas son las primas para cada empleado
+Primas<-Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,1000000,300000)
+
+
+#Punto i
+#Para la prima nivelada, se toman la suma de las esperanzas de los beneficios futuros y se divide
+#por la suma de las esperanza del valor presente de las primas futuras
+#Este monto es anual
+
+Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
+
+
+#Punto j
+
+#Calcula cuánto es el 90% de las primas obtenidas
+Primas_90_porciento <- data.frame(Empleado = Primas$Empleado,
+                                  Menos_10_porciento = (Primas$Primas)*0.9)
+
+# Se calculan primas con:
+# Suma asegurada de 5 millones durante el tiempo de ser empleado activo
+# Suma asegurada de 3.223.550 durante pensión 
+# Primer año de pensión con mensualidad de 265.000 colones
+Primas1_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,3223550,265000)
+
+
+#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
+Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
+                                    editada = Primas1_menos_10$Primas, 
+                                    porcentaje= (Primas1_menos_10$Primas / Primas$Primas) * 100)
+
+#Imprime el porcentaje promedio que representan las nuevas primas de las originales
+print(sum(Verifica1_90_porciento$porcentaje)/nrow(Verifica1_90_porciento))
+
+# Se calculan primas con:
+# Suma asegurada de 1 millón durante el tiempo de ser empleado activo
+# Suma asegurada de 1 millón durante pensión 
+# Primer año de pensión con mensualidad de 272.500 colones
+Primas2_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,1000000,1000000,272500)
+
+
+#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
+Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
+                                    editada = Primas2_menos_10$Primas, 
+                                    porcentaje= (Primas2_menos_10$Primas / Primas$Primas) * 100)
+
+#Imprime el porcentaje promedio que representan las nuevas primas de las originales
+print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
+
