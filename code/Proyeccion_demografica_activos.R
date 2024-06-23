@@ -1,5 +1,5 @@
 # Definimos la función que acepta un dataframe `ABC` como argumento
-proyeccion_demografica_activos <- function(ABC) {
+proyeccion_demografica_activos <- function(ABC, lista) {
   
   # Definimos los rangos de edades y años
   edades <- 20:64
@@ -37,8 +37,8 @@ proyeccion_demografica_activos <- function(ABC) {
             proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- 0
             proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1
           } else {
-            proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (Tablas_SUPEN_Masc[ABC$Edad[i], j + 24])
-            proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - Tablas_SUPEN_Masc[ABC$Edad[i], j + 24])
+            proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (lista[[1]][as.character(ABC$Edad[i]), j + 24])
+            proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - lista[[1]][ABC$Edad[i], j + 24])
           }
         }
       } else {
@@ -47,8 +47,8 @@ proyeccion_demografica_activos <- function(ABC) {
             proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- 0
             proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1
           } else {
-            proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (Tablas_SUPEN_Fem[ABC$Edad[i], j + 24])
-            proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - Tablas_SUPEN_Fem[ABC$Edad[i], j + 24])
+            proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (lista[[2]][ABC$Edad[i], j + 24])
+            proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - lista[[2]][ABC$Edad[i], j + 24])
           }
         }
       }
@@ -62,7 +62,7 @@ proyeccion_demografica_activos <- function(ABC) {
   
   # Devolvemos los dataframes de proyección de muerte y vivos
   list(
-    proyeccion_mueros_activos_Masc = proyeccion_muerte_activos_Masc,
+    proyeccion_muertos_activos_Masc = proyeccion_muerte_activos_Masc,
     proyeccion_muertos_activos_Fem = proyeccion_muerte_activos_Fem,
     proyeccion_vivos_activos_Masc = proyeccion_vivos_activos_Masc,
     proyeccion_vivos_activos_Fem = proyeccion_vivos_activos_Fem
