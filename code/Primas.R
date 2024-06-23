@@ -142,7 +142,7 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
   return(Primas_individuales)
 }
 
- 
+
 #Punto g
 #Proyección financiera de la anualidad
 #proy_pensionados_vivos: Es la proyección de pensionados vivos
