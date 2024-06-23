@@ -142,6 +142,27 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
   return(Primas_individuales)
 }
 
+ 
+#Punto g
+#Proyección financiera de la anualidad
+#proy_pensionados_vivos: Es la proyección de pensionados vivos
+#pension_mensual: monto de anualidad
+
+Proyeccion_financiera_pension <- function(proy_pensionados_vivos, pension_mensual) {
+  anualidad_pensión <- descuento_anual(pension_mensual)
+  Proyeccion_financiera_anualidad <- data.frame(Anno = 2024:(2024 + nrow(proy_pensionados_vivos) - 1), anualidad = numeric(nrow(proy_pensionados_vivos)))
+  
+  for (e in 1:nrow(proy_pensionados_vivos)) {
+    Proyeccion_financiera_anualidad$anualidad[e] <- (proy_pensionados_vivos$poblacion_hombres[e] + proy_pensionados_vivos$poblacion_mujeres[e]) * anualidad_pensión * (1.03)^(e - 1)
+  }
+  
+  return(Proyeccion_financiera_anualidad)
+}
+
+
+Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000)
+
+
 #Punto h
 #Estas son las primas para cada empleado
 Primas<-Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,1000000,300000)
