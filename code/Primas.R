@@ -1,5 +1,4 @@
 
-
 # Descuenta los pagos mensuales de la pensión un año para tener la anualidad anual
 
 descuento_anual <- function(cantidad){
@@ -74,7 +73,7 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
     else if (x + t - 1 >= 65) {
       
       VPF <- VPF + suma_asegurada_pensionado * (1.03)^t_p * v_t * p_x * q_t 
-      VPS <- VPS + anualidad_pensión * (1.03)^t_p * v_t * p_x
+      VPS <- VPS + anualidad_pensión * (1.03)^(t - 1) * v_t * p_x
       t_p <- t_p + 1
       
     }
@@ -164,9 +163,9 @@ Primas_90_porciento <- data.frame(Empleado = Primas$Empleado,
 
 # Se calculan primas con:
 # Suma asegurada de 5 millones durante el tiempo de ser empleado activo
-# Suma asegurada de 3.223.550 durante pensión 
-# Primer año de pensión con mensualidad de 265.000 colones
-Primas1_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,3223550,265000)
+# Suma asegurada de 5 millones durante pensión 
+# Primer año de pensión con mensualidad de 265.500 colones
+Primas1_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,5000000,265500)
 
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
@@ -180,8 +179,8 @@ print(sum(Verifica1_90_porciento$porcentaje)/nrow(Verifica1_90_porciento))
 # Se calculan primas con:
 # Suma asegurada de 1 millón durante el tiempo de ser empleado activo
 # Suma asegurada de 1 millón durante pensión 
-# Primer año de pensión con mensualidad de 272.500 colones
-Primas2_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,1000000,1000000,272500)
+# Primer año de pensión con mensualidad de 271.000 colones
+Primas2_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,1000000,1000000,271000)
 
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
