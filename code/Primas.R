@@ -86,7 +86,7 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
 # Función para calculo de primas
 
 #Base : Base de empleados 
-#Tabla_muerte : Lista de las tabla de mortalidad separada por sexo: 1 (hombre), 2 (mujer)
+#Tabla_mortal : Lista de las tabla de mortalidad separada por sexo: 1 (hombre), 2 (mujer)
 #suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
 #suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
 #pension_mensual: Plan de pensión mensual
@@ -142,6 +142,23 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
   return(Primas_individuales)
 }
 
+
+#Punto f
+#Proyección financiera de beneficios de muerte para pensionados 
+#proy_pensionados_muertos: Es la proyección de pensionados que mueren
+#suma_asegurada_pensionados: Es la suma que se asegura para los pensionados en el contrato
+
+Proyeccion_financiera_muerte_pensionados <- function(proy_pensionados_muertos, suma_asegurada_pensionados) {
+  Proyeccion_beneficios_muerte_pensionados <- data.frame(Anno = 2024:(2024 + nrow(proy_pensionados_muertos) - 1), beneficio_muerte = numeric(nrow(proy_pensionados_muertos)))
+  
+  for (e in 1:nrow(proy_pensionados_muertos)) {
+    Proyeccion_beneficios_muerte_pensionados$beneficio_muerte[e] <- (proy_pensionados_muertos$poblacion_hombres[e] + proy_pensionados_muertos$poblacion_mujeres[e]) * suma_asegurada_pensionados * (1.03)^(e - 1)
+  }
+  
+  return(Proyeccion_beneficios_muerte_pensionados)
+}
+
+Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
 
 #Punto g
 #Proyección financiera de la anualidad
