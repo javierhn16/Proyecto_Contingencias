@@ -5,16 +5,10 @@ proyeccion_financiera <- function(lista, inflacion){
   # Calcula los factores de inflación
   factores_inflacion <- (1 + inflacion)^(1:46)
 
-  graf_proy_hombres <- data.frame(
+  graf_proy <- data.frame(
     Annos = 2024:2069,  # Convertir los nombres de las columnas a numérico
-    Proyeccion =  t(lista[[3]]["Total", 2:47] * 5000000) * factores_inflacion
+    Proyeccion = t((lista[[4]]["Total", 2:47] + lista[[3]]["Total", 2:47])  * 5000000) * factores_inflacion
   )
-  
-  graf_proy_mujeres <- data.frame(
-    Annos = 2024:2069,  # Convertir los nombres de las columnas a numérico
-    Proyeccion = t(lista[[4]]["Total", 2:47] * 5000000) * factores_inflacion
-  )
-  
-  resultado <- list(graf_proy_hombres, graf_proy_mujeres)
+  resultado <- graf_proy
   return(resultado)
 }
