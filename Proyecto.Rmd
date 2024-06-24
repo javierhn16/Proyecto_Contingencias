@@ -87,11 +87,34 @@ fig_proy_financiera
 ### Punto f
 ```{r}
 Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
+
+fig_proy_finan_muerte_pen <- plot_ly(Proyeccion_beneficios_muerte_pensionados, x = ~Anno) %>%
+  add_lines(y = ~beneficio_muerte, name = 'Proyeccion', line = list(color = '#698B69')) %>%
+  layout(
+    title = "Proyeccion de los beneficios por muerte para pensionados según el año",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_proy_finan_muerte_pen
+
 ```
 
 ### Punto g
 ```{r}
 Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000)
+
+fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
+  add_lines(y = ~anualidad, name = 'Proyeccion', line = list(color = '#698B69')) %>%
+  layout(
+    title = "Proyeccion de pensiones según el año",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_proy_financiera_pension
 ```
 
 ### Punto h
@@ -149,5 +172,9 @@ Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_p
 
 #Imprime el porcentaje promedio que representan las nuevas primas de las originales
 print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
+```
+
+```{r}
+
 ```
 
