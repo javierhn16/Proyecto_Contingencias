@@ -15,10 +15,10 @@ base_empleados <- base_empleados %>%
   mutate(Edad = 2023 - as.numeric(format(`Fecha de nacimiento`, "%Y")),
          Sexo = if_else(Sexo == 'M', 1, 2),
          Mes = month(`Fecha de nacimiento`)) %>% 
-  select(-`Fecha de nacimiento`) 
+  select(-`Fecha de nacimiento`)
 
 # Limpia los nombres de la base_empleados
-colnames(base_empleados) <- c('id', 'sexo', 'edad')
+colnames(base_empleados) <- c('id', 'sexo', 'edad', 'mes')
 
 
 
