@@ -121,6 +121,7 @@ fig_proy_financiera_pension
 Estas son las primas para cada empleado
 ```{r}
 Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000)
+
 ```
 
 ### Punto i
@@ -128,6 +129,14 @@ Para la prima nivelada, se toman la suma de las esperanzas de los beneficios fut
 valor presente de las primas futuras, dando como resultado la prima nivelada anual.
 ```{r}
 Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
+ggplot(Primas, aes(x = log(Primas))) +
+  geom_histogram(bins = 20, fill = "blue", color = "black") +
+  geom_vline(xintercept = log(Prima_nivelada), color = "red", linetype = "dashed", size = 1) +
+  geom_text(aes(x = log(Prima_nivelada), y = -Inf, label = "Log prima nivelada"), 
+            color = "red", hjust = -0.2, vjust = -0.5) +
+  labs(title = "Histograma de Primas a Pagar", x = "logaritmo primas", y = "Frecuencia") +
+  theme_minimal()
+
 ```
 
 ### Punto j
@@ -145,8 +154,8 @@ La primera alternativa para reducir la prima 10%:
 # Se calculan primas con:
 # Suma asegurada de 5 millones durante el tiempo de ser empleado activo
 # Suma asegurada de 5 millones durante pensión 
-# Primer año de pensión con mensualidad de 265.500 colones
-Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,265500)
+# Primer año de pensión con mensualidad de 266.200 colones
+Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266200)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
@@ -162,8 +171,8 @@ La Segunda alternativa para reducir la prima 10%:
 # Se calculan primas con:
 # Suma asegurada de 1 millón durante el tiempo de ser empleado activo
 # Suma asegurada de 1 millón durante pensión 
-# Primer año de pensión con mensualidad de 271.000 colones
-Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271000)
+# Primer año de pensión con mensualidad de 271.900 colones
+Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271900)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
@@ -175,6 +184,43 @@ print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
 ```
 
 ```{r}
+
+#36648B
+tabla_para_graficar <- data.frame(Empleado = Primas$Empleado,
+                                   original = Primas$Primas, 
+                                   editada1 = Verifica1_90_porciento$editada, 
+                                   editada2 = Verifica2_90_porciento$editada)
+
+  fig_comparacion1 <- plot_ly(tabla_para_graficar, x = ~Empleado) %>%
+  add_trace(y = ~original, name = 'Original', type = 'bar', marker = list(color = '#92CFFF')) %>%
+  add_trace(y = ~editada1, name = 'Opción 1 (90% de original)', type = 'bar', marker = list(color = '#193B7B')) %>%
+  layout(
+    title = "Comparación de la reducción de la 'Opción 1' con el original",
+    xaxis = list(title = 'Empleado'),
+    yaxis = list(title = 'Prima reducida'),
+    barmode = 'group',
+    legend = list(x = 0, y = 1, bgcolor = "white", bordercolor = "black", borderwidth = 1),
+    margin = list(l = 50, r = 50, b = 50, t = 50, pad = 4)
+  )
+
+fig_comparacion1
+```
+
+```{r}
+
+fig_comparacion2 <- plot_ly(tabla_para_graficar, x = ~Empleado) %>%
+  add_trace(y = ~original, name = 'Original', type = 'bar', marker = list(color = '#92CFFF')) %>%
+  add_trace(y = ~editada2, name = 'Opción 2 (90% de original)', type = 'bar', marker = list(color = '#193B7B')) %>%
+  layout(
+    title = "Comparación de la reducción de la 'Opción 2' con el original",
+    xaxis = list(title = 'Empleado'),
+    yaxis = list(title = 'Prima reducida'),
+    barmode = 'group',
+    legend = list(x = 0, y = 1, bgcolor = "white", bordercolor = "black", borderwidth = 1),
+    margin = list(l = 50, r = 50, b = 50, t = 50, pad = 4)
+  )
+
+fig_comparacion2
 
 ```
 
