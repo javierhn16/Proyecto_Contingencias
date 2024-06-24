@@ -19,7 +19,7 @@ descuento_anual <- function(cantidad){
 
 Ia_Geometrica <- function(x, s, lista){
   #Dado que todo está en terminos anuales, se puede usar la i así
-  i <- 0.04
+  i <- 0.07
   #El v para un año
   v <- 1/(1 + i)
   # m: Tiempo máximo de pago, dado que se retiran a los 65 
@@ -35,14 +35,15 @@ Ia_Geometrica <- function(x, s, lista){
 
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
+# mes: mes de nacimiento 
 # lista: tabla de mortalidad 
 # suma_asegurada_activo: Beneficio en caso de ser empleado activo primer año
 # suma_asegurada_pensionado: Beneficio en caso de ser pensionado primer año
 # pension_mensual: Beneficio de la pensión mensual primer año
 
-valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
+valor_presente_beneficios <- function(x, s,mes, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
   # tasa anual
-  i <- 0.04
+  i <- 0.07
   # Valor Presente en caso de fallecimiento 
   VPF <- 0  
   # Valor Presente en caso de sobrevivencia (pago pensión)
@@ -51,6 +52,10 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
   p_x <- 1
   # Auxiliar para conteo del tiempo después de 65 años
   t_p <- 0
+  #para solo un año y aginaldo
+  v <- 1/(1 + i)
+  m <- 0:13
+  
   
   # Pensión anualizada
   anualidad_pensión <- descuento_anual(pension_mensual)
@@ -70,7 +75,13 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
       
       
     } #Al sobrepasar los 65 años, tiene seguro vitalicio y pensión vitalicia
-    else if (x + t - 1 >= 65) {
+    else if (x + t - 1 == 65) {
+      monto_mes_pension = anualidad_pensión/sum(v^m)
+      VPF <- VPF + suma_asegurada_pensionado * (1.03)^t_p * v_t * p_x * q_t 
+      VPS <- VPS + (13-mes) * monto_mes_pension * (1.03)^(t - 1) * v_t * p_x
+      t_p <- t_p + 1
+    }
+    else if (x + t - 1 > 65) {
       
       VPF <- VPF + suma_asegurada_pensionado * (1.03)^t_p * v_t * p_x * q_t 
       VPS <- VPS + anualidad_pensión * (1.03)^(t - 1) * v_t * p_x
@@ -122,13 +133,13 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 1){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1,Base$mes, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
       }
     } else if (Base$sexo[i] == 2){
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 2){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2,Base$mes, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
       }
     }
   }
