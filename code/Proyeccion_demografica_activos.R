@@ -31,24 +31,24 @@ proyeccion_demografica_activos <- function(ABC, lista) {
   for (j in 1:ncol(proyeccion_muerte_activos_Masc)) {
     for (i in 1:nrow(ABC)) {
       
-      if (ABC$Sexo[i] == 1) {
-        if (ABC$Edad[i] + j - 1 < 65) {
+      if (ABC$sexo[i] == 1) {
+        if (ABC$edad[i] + j - 1 < 65) {
           if (j == 1) {
-            proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- 0
-            proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1
+            proyeccion_muerte_activos_Masc[as.character(ABC$edad[i] + j - 1), j] <- 0
+            proyeccion_vivos_activos_Masc[as.character(ABC$edad[i] + j - 1), j] <- proyeccion_vivos_activos_Masc[as.character(ABC$edad[i] + j - 1), j] + 1
           } else {
-            proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (lista[[1]][as.character(ABC$Edad[i]), j + 24])
-            proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Masc[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - lista[[1]][ABC$Edad[i], j + 24])
+            proyeccion_muerte_activos_Masc[as.character(ABC$edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Masc[as.character(ABC$edad[i] + j - 1), j] + 1) * (lista[[1]][as.character(ABC$edad[i]), j + 24])
+            proyeccion_vivos_activos_Masc[as.character(ABC$edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Masc[as.character(ABC$edad[i] + j - 1), j] + 1) * (1 - lista[[1]][ABC$edad[i], j + 24])
           }
         }
       } else {
-        if (ABC$Edad[i] + j - 1 < 65) {
+        if (ABC$edad[i] + j - 1 < 65) {
           if (j == 1) {
-            proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- 0
-            proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1
+            proyeccion_muerte_activos_Fem[as.character(ABC$edad[i] + j - 1), j] <- 0
+            proyeccion_vivos_activos_Fem[as.character(ABC$edad[i] + j - 1), j] <- proyeccion_vivos_activos_Fem[as.character(ABC$edad[i] + j - 1), j] + 1
           } else {
-            proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (lista[[2]][ABC$Edad[i], j + 24])
-            proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Fem[as.character(ABC$Edad[i] + j - 1), j] + 1) * (1 - lista[[2]][ABC$Edad[i], j + 24])
+            proyeccion_muerte_activos_Fem[as.character(ABC$edad[i] + j - 1), j] <- (proyeccion_muerte_activos_Fem[as.character(ABC$edad[i] + j - 1), j] + 1) * (lista[[2]][ABC$edad[i], j + 24])
+            proyeccion_vivos_activos_Fem[as.character(ABC$edad[i] + j - 1), j] <- (proyeccion_vivos_activos_Fem[as.character(ABC$edad[i] + j - 1), j] + 1) * (1 - lista[[2]][ABC$edad[i], j + 24])
           }
         }
       }
