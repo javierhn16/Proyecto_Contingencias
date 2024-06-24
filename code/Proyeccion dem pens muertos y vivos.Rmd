@@ -9,6 +9,12 @@ output:
     - amsmath
     - someotherpackage
 ---
+```{r}
+library(dplyr)
+library(readxl)
+library(plotly)
+```
+
 
 # Hay que unificar esto!!!!!!!!!
 ```{r}
@@ -85,7 +91,7 @@ Se obtuvo que hay 272 hombres y 228 mujeres
 ## Proyeccion de la poblacion viva
 ```{r}
 # Inicializamos un df para proyectar luego la población que hay con edades de 0 a 115 años
-proy_poblacion <- data.frame(edad = 0:115, poblacion_hombres = numeric(116), poblacion_mujeres = numeric(116))
+proy_poblacion <- data.frame(Año = c(2024:2120), poblacion_hombres = numeric(97), poblacion_mujeres = numeric(97))
 
 # Definimos la población inicial de hombres y mujeres 
 proy_poblacion$poblacion_hombres[1] = 272
@@ -96,22 +102,22 @@ calcular_poblacion_viva <- function(px, df){
   acum_hombres <- rep(1, 272)
   acum_mujeres <- rep(1, 228)
   
-  # Iteramos sobre cada edad de 1 a 115 que es el limite de la tabla
-  for (i in 1:115){
-    m <- 0 # inicilizamos contador de mujeres
-    h <- 0 # inicilizamos contador de hombres
+  # Iteramos sobre cada año de 1 a 96 (97 años en total)
+  for (i in 1:96){
+    m <- 0 # Inicializamos contador de mujeres
+    h <- 0 # Inicializamos contador de hombres
     
     # Iteramos sobre cada persona en el listado de probabilidades que tenemos
     for (j in seq_along(px)){
-      if(px[[j]][[2]] == 1){ # Por como se estructuro el diccionario este valor posee los sexos de la persona, es decir, valores 1 para H y 2 para M
-        h <- h + 1 # incrementamos el contador
+      if(px[[j]][[2]] == 1){ # Por como se estructuró el diccionario este valor posee los sexos de la persona, es decir, valores 1 para H y 2 para M
+        h <- h + 1 # Incrementamos el contador
         if(i <= length(px[[j]][[1]])){
-          acum_hombres[h] <- acum_hombres[h] * px[[j]][[1]][[i]] # acumulacion de hombres hasta ese momento por las probabilidades de sobrevivencia
+          acum_hombres[h] <- acum_hombres[h] * px[[j]][[1]][[i]] # Acumulación de hombres hasta ese momento por las probabilidades de sobrevivencia
         }
       } else { # Si es mujer
-        m <- m + 1 # incrementamos el contador
+        m <- m + 1 # Incrementamos el contador
         if(i <= length(px[[j]][[1]])){
-          acum_mujeres[m] <- acum_mujeres[m] * px[[j]][[1]][[i]] # acumulacion de mujeres hasta ese momento por las probabilidades de sobrevivencia
+          acum_mujeres[m] <- acum_mujeres[m] * px[[j]][[1]][[i]] # Acumulación de mujeres hasta ese momento por las probabilidades de sobrevivencia
         }
       }
     }
@@ -146,7 +152,7 @@ proy_poblacion_muerta
 ## Proyeccion para pensionados vivos
 ```{r}
 # Inicializamos un df para proyectar luego la población de pensionados vivos que hay con edades de 0 a 115 años
-proy_pensionados_vivos <- data.frame(edad = 0:115, poblacion_hombres = numeric(116), poblacion_mujeres = numeric(116))
+proy_pensionados_vivos <- data.frame(Año = c(2024:2120), poblacion_hombres = numeric(97), poblacion_mujeres = numeric(97))
 
 # Función para calcular la población de pensionados vivos
 calcular_pensionados_vivos <- function(px, df){
@@ -154,8 +160,8 @@ calcular_pensionados_vivos <- function(px, df){
   acum_hombres <- rep(1, 272)
   acum_mujeres <- rep(1, 228)
   
-  # Iteramos sobre cada edad de 1 a 115 años
-  for (i in 1:115){
+  # Iteramos sobre cada año de 2024 a 2120
+  for (i in 1:97){
     m <- 0 # Contador de mujeres
     h <- 0 # Contador de hombres
     pensionados_hombres <- numeric(272) # Vector para acumular pensionados hombres
@@ -184,17 +190,24 @@ calcular_pensionados_vivos <- function(px, df){
       }
     }
     
-    # Sumamos las probabilidades acumuladas para obtener la población viva de pensionados hombres y mujeres en la edad actual e introducimos en el df
-    df$poblacion_hombres[i+1] <- sum(pensionados_hombres)
-    df$poblacion_mujeres[i+1] <- sum(pensionados_mujeres)
+    # Sumamos las probabilidades acumuladas para obtener la población viva de pensionados hombres y mujeres en el año actual e introducimos en el df
+    df$poblacion_hombres[i] <- sum(pensionados_hombres)
+    df$poblacion_mujeres[i] <- sum(pensionados_mujeres)
+
+    # Si el año es mayor que 2119, hacemos el brinco a 228
+    if (df$Año[i] > 2119) {
+      df$poblacion_hombres[i] <- 0
+      df$poblacion_mujeres[i] <- 0
+    }
   }
-  return(df) # Devolvemos el data frame actualizado con las proyecciones de población de pensionados vivos
+  return(df)
 }
 
 # Calculamos la población viva proyectada de pensionados
 proy_pensionados_vivos <- calcular_pensionados_vivos(px, proy_pensionados_vivos)
 
 proy_pensionados_vivos
+
 ```
 
 
@@ -203,7 +216,7 @@ proy_pensionados_vivos
 Se hace como que lo mismo pero ahora se multiplica por las probabilidades de muerte, es decir, * (1 - px[[j]][[1]][[i]])
 ```{r}
 # Inicializamos el data frame para proyectar la población de pensionados muertos con edades de 0 a 115 años
-proy_pensionados_muertos <- data.frame(edad = 0:115, poblacion_hombres = numeric(116), poblacion_mujeres = numeric(116))
+proy_pensionados_muertos <- data.frame(Año = c(2024:2120), poblacion_hombres = numeric(97), poblacion_mujeres = numeric(97))
 
 # Función para calcular la población de pensionados muertos
 calcular_pensionados_muertos <- function(px, df){
@@ -211,8 +224,8 @@ calcular_pensionados_muertos <- function(px, df){
   acum_hombres <- rep(1, 272)
   acum_mujeres <- rep(1, 228)
   
-  # Iteramos sobre cada edad de 1 a 115 años
-  for (i in 1:115){
+  # Iteramos sobre cada año de 1 a 97
+  for (i in 1:97){
     m <- 0 # Contador de mujeres
     h <- 0 # Contador de hombres
     pensionados_hombres <- numeric(272) # Vector para acumular pensionados hombres muertos
@@ -242,16 +255,22 @@ calcular_pensionados_muertos <- function(px, df){
     }
     
     # Sumamos las probabilidades acumuladas para obtener la población de pensionados muertos hombres y mujeres en la edad actual
-    df$poblacion_hombres[i+1] <- sum(pensionados_hombres) + df$poblacion_hombres[i]
-    df$poblacion_mujeres[i+1] <- sum(pensionados_mujeres) + df$poblacion_mujeres[i]
+    df$poblacion_hombres[i] <- sum(pensionados_hombres) + (if(i > 1) df$poblacion_hombres[i-1] else 0)
+    df$poblacion_mujeres[i] <- sum(pensionados_mujeres) + (if(i > 1) df$poblacion_mujeres[i-1] else 0)
+    # Si el año es mayor que 2119, hacemos el brinco a 228
+    #if (df$Año[i] > 2118) {
+    #  df$poblacion_hombres[i] <- 272
+    #  df$poblacion_mujeres[i] <- 228
+    #}
   }
-  return(df) # Devolvemos el data frame actualizado con las proyecciones de población de pensionados muertos
+  return(df)
 }
 
 # Calculamos la población muerta proyectada de pensionados
 proy_pensionados_muertos <- calcular_pensionados_muertos(px, proy_pensionados_muertos)
 
 proy_pensionados_muertos
+
 ```
 
 
@@ -261,17 +280,19 @@ proy_pensionados_muertos
 ## Df Proyección y Grafico interactivo mujeres 
 Se hace un df para hacer posteriormente el ploteo de la data
 ```{r}
+
+
+# Crear el data frame combinado para las proyecciones de mujeres
 proy_mujeres <- data.frame(
-  edad = 0:115,
-  proy_vivas = proy_poblacion$poblacion_mujeres,
-  proy_muertas = proy_poblacion_muerta$poblacion_mujeres,
-  proy_pensionadas_vivas = proy_pensionados_vivos$poblacion_mujeres,
-  proy_pensionadas_muertas = proy_pensionados_muertos$poblacion_mujeres
+  Año = 2024:2120,
+  proy_vivas = proy_pensionados_vivos$poblacion_mujeres,
+  proy_muertas = proy_pensionados_muertos$poblacion_mujeres
 )
 
-fig_mujeres <- plot_ly(proy_mujeres, x = ~edad) %>%
-  add_lines(y = ~proy_pensionadas_vivas, name = 'Vivas', line = list(color = '#FFA0F5')) %>%
-  add_lines(y = ~proy_pensionadas_muertas, name = 'Muertas', line = list(color = '#931986')) %>%
+# Crear el gráfico
+fig_mujeres <- plot_ly(proy_mujeres, x = ~Año) %>%
+  add_lines(y = ~proy_vivas, name = 'Vivas', line = list(color = '#FFA0F5')) %>%
+  add_lines(y = ~proy_muertas, name = 'Muertas', line = list(color = '#931986')) %>%
   layout(
     title = "Proyección Demográfica para pensionadas",
     xaxis = list(title = 'Año'),
@@ -287,7 +308,7 @@ fig_mujeres
 ## Df Proyección y Grafico interactivo hombres 
 ```{r}
 proy_hombres <- data.frame(
-  edad = 0:115,
+  Año = 2024:2120,
   proy_vivos = proy_poblacion$poblacion_hombres,
   proy_muertos = proy_poblacion_muerta$poblacion_hombres,
   proy_pensionados_vivos = proy_pensionados_vivos$poblacion_hombres,
@@ -295,7 +316,7 @@ proy_hombres <- data.frame(
 )
 
 
-fig_hombres <- plot_ly(proy_hombres, x = ~edad) %>%
+fig_hombres <- plot_ly(proy_hombres, x = ~Año) %>%
   add_lines(y = ~proy_pensionados_vivos, name = 'Vivos', line = list(color = '#92CFFF')) %>%
   add_lines(y = ~proy_pensionados_muertos, name = 'Muertos', line = list(color = '#193B7B')) %>%
   layout(
@@ -307,5 +328,10 @@ fig_hombres <- plot_ly(proy_hombres, x = ~edad) %>%
 
 fig_hombres
 ```
+
+
+
+
+
 
 
