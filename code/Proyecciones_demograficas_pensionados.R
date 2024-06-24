@@ -9,14 +9,14 @@ library(plotly)
 
 # Hay que unificar esto!!!!!!!!!
 
-ABC <- read_excel("F:/Contingencias/Proyecto/GIT/Proyecto_Contingencias/data/Base de datos.xlsx") %>%
+ABC <- read_excel("data/Base de datos.xlsx") %>%
   mutate(
     `Fecha de nacimiento` = 2023 - as.numeric(format(`Fecha de nacimiento`, "%Y")),
     Sexo = as.numeric(recode(Sexo, 'M' = '1', 'F' = '2'))
   )
 colnames(ABC)[2] <- "Edad"
 
-SUPEN <- read_excel("F:/Contingencias/Proyecto/GIT/Proyecto_Contingencias/data/tavid2000-2150.xlsx") %>%
+SUPEN <- read_excel("data/tavid2000-2150.xlsx") %>%
   mutate(across(everything(), as.numeric))
 
 
