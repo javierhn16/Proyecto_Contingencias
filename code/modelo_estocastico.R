@@ -1,5 +1,8 @@
 
 source('code/lectura_datos.R')
+source('code/Primas.R')
+primas <- Calcula_prima_individuales(base_empleados, tablas_supen, 5000000, 1000000, 300000) %>% 
+  select(Empleado, Primas)
 
 # Funciones previas -------------------------------------------------------
 
@@ -25,32 +28,42 @@ obtener_qx_vect <- Vectorize(obtener_qx)
 
 # Funcón para realizar una simulación -------------------------------------
 
-simular <- function(dataframe, nrow_df){
+simular <- function(dataframe, nrow_df, primas) {
   
-  poblacion <- rep(1, nrow_df)
+  # Inicialmente, todos pagan primas ya que no hay pensionados
+  no_pensionados <- rep(1, nrow_df)
   suma_vp <- rep(0, nrow_df)
   
   for (anno in 1:46){
+    
     # Calcula el factor de descuento de cada año
     v <- (1.03 / 1.07) ^ (anno - 1)
     
-    sapply(1:nrow_df, function(i){
-      if (poblacion[i] == 1 && length(dataframe$qxs[[i]]) >= anno && runif(1) < dataframe$qxs[[i]][anno]) {
-        poblacion[i] <- 0
-        suma_vp[i] <- suma_vp[i] + 5000000 * v
+    for (i in 1:nrow_df) {
+      
+      # Si la persona murió o ya se pensionó pasa al siguiente (pues no paga prima)
+      if (no_pensionados[i] == 0 | is.na(dataframe$qxs[[i]][anno])){
+        next
       }
-    })
+      
+      # Si la persona sigue viva, calcula la prima
+      if (no_pensionados[i] == 1) {
+        suma_vp[i] <- suma_vp[i] + primas$Primas[i] * v
+        
+        # Realiza una simulación para el siguiente año
+        if (runif(1) < dataframe$qxs[[i]][anno]){
+          no_pensionados[i] <- 0
+        }
+      } 
+    }
   }
   return(suma_vp)
 }
-
+      
 
 # Función para realizar simulaciones --------------------------------------
 
 realizar_simulaciones <- function(dataframe, n_simulaciones){
-  
-  # Inicializa resultados
-  resultados <- matrix(0, nrow = n_simulaciones, ncol = nrow(dataframe))
   
   # Obtiene combinaciones únicas de sexo y edad
   combinaciones_unicas <- dataframe %>%
@@ -62,13 +75,14 @@ realizar_simulaciones <- function(dataframe, n_simulaciones){
   
   # Agrega los qx a cada empleado
   dataframe <- merge(dataframe, qx_unicos, by = c('edad', 'sexo'), all.x = TRUE) %>%
-    select(id, sexo, edad, qxs)
+    select(id, sexo, edad, qxs) %>% 
+    arrange(id)
   
   # Obtiene el número de empleados
   nrow_df <- nrow(dataframe)
   
-  # Ejecuta las simulaciones en paralelo usando lapply
-  resultados <- lapply(1:n_simulaciones, function(x) simular(dataframe, nrow_df))
+  # Ejecuta las simulaciones usando lapply
+  resultados <- lapply(1:n_simulaciones, function(x) simular(dataframe, nrow_df, primas))
   
   # Convierte la lista de resultados en una matriz
   resultados <- do.call(rbind, resultados)
@@ -77,27 +91,51 @@ realizar_simulaciones <- function(dataframe, n_simulaciones){
 }
 
 
+# Cálculo de percentiles 50 y 90 ------------------------------------------
+
+calcular_percentiles <- function(resultados, n_simulaciones) {
+  
+  # Calcula valores presentes y percentiles
+  valores_presentes <- colSums(resultados) / n_simulaciones
+  percentil_50 <- quantile(valores_presentes, 0.5)
+  percentil_90 <- quantile(valores_presentes, 0.9)
+
+  return(list(
+    promedios = valores_presentes,
+    primas_percentil_50 = percentil_50,
+    primas_percentil_90 = percentil_90
+    ))
+}
+
+
 # Ejecución del modelo estocástico ----------------------------------------
 
 # Número de simulaciones a realizar
-n_simulaciones <- 1
+n_simulaciones <- 50000
 
 # Realiza las simulaciones
 t <- proc.time()
 resultados <- realizar_simulaciones(base_empleados, n_simulaciones)
 proc.time() - t
 
-# Calcula valores presentes y percentiles
-valores_presentes <- rowSums(resultados)
-percentil_50 <- quantile(valores_presentes, 0.50)
-percentil_90 <- quantile(valores_presentes, 0.90)
+# Guarda las simulaciones en un .csv
+write.csv(resultados, "docs/resultados_estocasticos.csv", row.names = FALSE)
 
-# Calcula prima anual nivelada ajustada por inflación
-prima_anual_50 <- percentil_50 / sum((1.03) ^ (0:45))
-prima_anual_90 <- percentil_90 / sum((1.03) ^ (0:45))
+# Calcula los promedios y los percentiles
+percentiles <- calcular_percentiles(resultados, n_simulaciones)
 
-# Resultados
-percentiles <- list(
-  prima_anual_50 = prima_anual_50,
-  prima_anual_90 = prima_anual_90
-)
+# Guarda los promedios
+write.csv(percentiles$promedios, "docs/promedio_primas_estocasticas.csv", row.names = FALSE)
+
+# Guarda los percentiles
+write.csv(percentiles$primas_percentil_50, "docs/percentil_50.csv", row.names = FALSE)
+write.csv(percentiles$primas_percentil_90, "docs/percentil_90.csv", row.names = FALSE)
+
+# Genera histograma para visualizar los resultados
+hist(log(percentiles$promedios), 
+     breaks = 15, 
+     main = "Histograma de las primas estocásticas", 
+     xlab = "Primas", 
+     ylab = "Frecuencia", 
+     col = "lightgreen", 
+     border = "darkgreen")
