@@ -22,6 +22,82 @@ knitr::opts_chunk$set(warning = FALSE)
 source('code/setup.R')
 ```
 
+
+## Primer ejercicio
+
+### Punto A
+
+```{r}
+  tablas_activos <- proyeccion_demografica_activos(base_empleados, tablas_supen)
+```
+llamamos es script con los gráficos.
+```{r}
+source('code/graficos_activos.R')
+```
+
+#### Caso hombres
+
+```{r}
+fig_hombres_vivos_activos
+```
+#### Caso mujeres
+```{r}
+fig_mujeres_vivas_activas
+```
+
+### Punto B
+
+### Punto C
+
+#### Caso hombres 
+```{r}
+fig_hombres_muertes_activos
+```
+#### Caso mujeres
+```{r}
+fig_mujeres_muertes_activas
+```
+
+
+### Punto D
+
+### Punto E
+Para esta sección, se toman las proyecciones demográficas ya hechas anteriormente.
+
+En primer lugar, creamos las tablas en cuestión que nos ayudarán a graficar.
+```{r}
+tablas_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
+```
+
+#### Caso hombres
+```{r}
+fig_proy_financiera_Masc <- plot_ly(tablas_proy_fin[[1]], x = ~Annos) %>%
+  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#B0C4DE')) %>%
+  layout(
+    title = "Proyeccion financiera de hombres activos vivos según el año",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_proy_financiera_Masc
+```
+
+#### Caso mujeres
+```{r}
+fig_proy_financiera_Fem <- plot_ly(tablas_proy_fin[[2]], x = ~Annos) %>%
+  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#FFA0F5')) %>%
+  layout(
+    title = "Proyeccion financiera de mujeres activas vivas según el año",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_proy_financiera_Fem
+```
+
+
 ### Punto f
 ```{r}
 Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
