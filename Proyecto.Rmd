@@ -22,4 +22,70 @@ knitr::opts_chunk$set(warning = FALSE)
 source('code/setup.R')
 ```
 
+### Punto f
+```{r}
+Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
+```
+
+### Punto g
+```{r}
+Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000)
+```
+
+### Punto h
+Estas son las primas para cada empleado
+```{r}
+Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000)
+```
+
+### Punto i
+Para la prima nivelada, se toman la suma de las esperanzas de los beneficios futuros y se divide por la suma de las esperanza del 
+valor presente de las primas futuras, dando como resultado la prima nivelada anual.
+```{r}
+Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
+```
+
+### Punto j
+
+Dado que la idea de este ejercicio es reducir las primas un 10%, calculo cuál es la suma que representa el 90% de las primas originales,
+para acercarnos a ellas.
+```{r}
+#Calcula cuánto es el 90% de las primas obtenidas
+Primas_90_porciento <- data.frame(Empleado = Primas$Empleado,
+                                  Menos_10_porciento = (Primas$Primas)*0.9)
+```
+
+La primera alternativa para reducir la prima 10%:
+```{r}
+# Se calculan primas con:
+# Suma asegurada de 5 millones durante el tiempo de ser empleado activo
+# Suma asegurada de 5 millones durante pensión 
+# Primer año de pensión con mensualidad de 265.500 colones
+Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,265500)
+
+#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
+Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
+                                    editada = Primas1_menos_10$Primas, 
+                                    porcentaje= (Primas1_menos_10$Primas / Primas$Primas) * 100)
+
+#Imprime el porcentaje promedio que representan las nuevas primas de las originales
+print(sum(Verifica1_90_porciento$porcentaje)/nrow(Verifica1_90_porciento))
+```
+
+La Segunda alternativa para reducir la prima 10%:
+```{r}
+# Se calculan primas con:
+# Suma asegurada de 1 millón durante el tiempo de ser empleado activo
+# Suma asegurada de 1 millón durante pensión 
+# Primer año de pensión con mensualidad de 271.000 colones
+Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271000)
+
+#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
+Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
+                                    editada = Primas2_menos_10$Primas, 
+                                    porcentaje= (Primas2_menos_10$Primas / Primas$Primas) * 100)
+
+#Imprime el porcentaje promedio que representan las nuevas primas de las originales
+print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
+```
 

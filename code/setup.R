@@ -13,3 +13,5 @@ pacman::p_load(
 
 # R scripts
 source('code/lectura_datos.R')
+
+source('code/Primas.R')

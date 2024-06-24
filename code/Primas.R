@@ -143,7 +143,7 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
 }
 
 
-#Punto f
+
 #Proyección financiera de beneficios de muerte para pensionados 
 #proy_pensionados_muertos: Es la proyección de pensionados que mueren
 #suma_asegurada_pensionados: Es la suma que se asegura para los pensionados en el contrato
@@ -158,9 +158,9 @@ Proyeccion_financiera_muerte_pensionados <- function(proy_pensionados_muertos, s
   return(Proyeccion_beneficios_muerte_pensionados)
 }
 
-Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
 
-#Punto g
+
+
 #Proyección financiera de la anualidad
 #proy_pensionados_vivos: Es la proyección de pensionados vivos
 #pension_mensual: monto de anualidad
@@ -177,55 +177,5 @@ Proyeccion_financiera_pension <- function(proy_pensionados_vivos, pension_mensua
 }
 
 
-Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000)
 
-
-#Punto h
-#Estas son las primas para cada empleado
-Primas<-Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,1000000,300000)
-
-
-#Punto i
-#Para la prima nivelada, se toman la suma de las esperanzas de los beneficios futuros y se divide
-#por la suma de las esperanza del valor presente de las primas futuras
-#Este monto es anual
-
-Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
-
-
-#Punto j
-
-#Calcula cuánto es el 90% de las primas obtenidas
-Primas_90_porciento <- data.frame(Empleado = Primas$Empleado,
-                                  Menos_10_porciento = (Primas$Primas)*0.9)
-
-# Se calculan primas con:
-# Suma asegurada de 5 millones durante el tiempo de ser empleado activo
-# Suma asegurada de 5 millones durante pensión 
-# Primer año de pensión con mensualidad de 265.500 colones
-Primas1_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,5000000,5000000,265500)
-
-
-#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
-Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
-                                    editada = Primas1_menos_10$Primas, 
-                                    porcentaje= (Primas1_menos_10$Primas / Primas$Primas) * 100)
-
-#Imprime el porcentaje promedio que representan las nuevas primas de las originales
-print(sum(Verifica1_90_porciento$porcentaje)/nrow(Verifica1_90_porciento))
-
-# Se calculan primas con:
-# Suma asegurada de 1 millón durante el tiempo de ser empleado activo
-# Suma asegurada de 1 millón durante pensión 
-# Primer año de pensión con mensualidad de 271.000 colones
-Primas2_menos_10 <- Calcula_prima_individuales(Base_empleados,Tablas_mortalidad,1000000,1000000,271000)
-
-
-#se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
-Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
-                                    editada = Primas2_menos_10$Primas, 
-                                    porcentaje= (Primas2_menos_10$Primas / Primas$Primas) * 100)
-
-#Imprime el porcentaje promedio que representan las nuevas primas de las originales
-print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
 
