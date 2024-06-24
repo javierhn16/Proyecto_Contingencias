@@ -69,33 +69,19 @@ En primer lugar, creamos las tablas en cuestión que nos ayudarán a graficar.
 tablas_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
 ```
 
-#### Caso hombres
 ```{r}
-fig_proy_financiera_Masc <- plot_ly(tablas_proy_fin[[1]], x = ~Annos) %>%
-  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#B0C4DE')) %>%
+fig_proy_financiera <- plot_ly(tablas_proy_fin, x = ~Annos) %>%
+  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
-    title = "Proyeccion financiera de hombres activos vivos según el año",
+    title = "Proyeccion financiera de activos vivos según el año",
     xaxis = list(title = 'Edad'),
     yaxis = list(title = 'Personas'),
     legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
-fig_proy_financiera_Masc
+fig_proy_financiera
 ```
 
-#### Caso mujeres
-```{r}
-fig_proy_financiera_Fem <- plot_ly(tablas_proy_fin[[2]], x = ~Annos) %>%
-  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#FFA0F5')) %>%
-  layout(
-    title = "Proyeccion financiera de mujeres activas vivas según el año",
-    xaxis = list(title = 'Edad'),
-    yaxis = list(title = 'Personas'),
-    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
-  )
-
-fig_proy_financiera_Fem
-```
 
 
 ### Punto f
