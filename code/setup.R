@@ -15,3 +15,7 @@ pacman::p_load(
 source('code/lectura_datos.R')
 
 source('code/Primas.R')
+
+source('code/Proyeccion_demografica_activos.R')
+
+source('code/proyeccion_financiera.R')
