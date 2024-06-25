@@ -93,7 +93,7 @@ fig_proy_finan_muerte_pen <- plot_ly(Proyeccion_beneficios_muerte_pensionados, x
   layout(
     title = "Proyeccion de los beneficios por muerte para pensionados según el año",
     xaxis = list(title = 'Año'),
-    yaxis = list(title = 'Dinero'),
+    yaxis = list(title = 'Cantidad de Dinero'),
     legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
@@ -108,9 +108,9 @@ Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = pro
 fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
   add_lines(y = ~anualidad, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
-    title = "Proyeccion de pensiones según el año",
+    title = "Proyeccion del pago de pensiones según el año",
     xaxis = list(title = 'Año'),
-    yaxis = list(title = 'Dinero'),
+    yaxis = list(title = 'Cantidad de Dinero'),
     legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
@@ -129,6 +129,7 @@ Para la prima nivelada, se toman la suma de las esperanzas de los beneficios fut
 valor presente de las primas futuras, dando como resultado la prima nivelada anual.
 ```{r}
 Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
+print(Prima_nivelada)
 ggplot(Primas, aes(x = log(Primas))) +
   geom_histogram(bins = 20, fill = "blue", color = "black") +
   geom_vline(xintercept = log(Prima_nivelada), color = "red", linetype = "dashed", size = 1) +
@@ -185,7 +186,7 @@ print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
 
 ```{r}
 
-#36648B
+
 tabla_para_graficar <- data.frame(Empleado = Primas$Empleado,
                                    original = Primas$Primas, 
                                    editada1 = Verifica1_90_porciento$editada, 
@@ -221,6 +222,10 @@ fig_comparacion2 <- plot_ly(tabla_para_graficar, x = ~Empleado) %>%
   )
 
 fig_comparacion2
+
+```
+
+```{r}
 
 ```
 
