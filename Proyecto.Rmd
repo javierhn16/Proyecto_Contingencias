@@ -92,8 +92,8 @@ fig_proy_finan_muerte_pen <- plot_ly(Proyeccion_beneficios_muerte_pensionados, x
   add_lines(y = ~beneficio_muerte, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
     title = "Proyeccion de los beneficios por muerte para pensionados según el año",
-    xaxis = list(title = 'Edad'),
-    yaxis = list(title = 'Personas'),
+    xaxis = list(title = 'Año'),
+    yaxis = list(title = 'Dinero'),
     legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
@@ -109,8 +109,8 @@ fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
   add_lines(y = ~anualidad, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
     title = "Proyeccion de pensiones según el año",
-    xaxis = list(title = 'Edad'),
-    yaxis = list(title = 'Personas'),
+    xaxis = list(title = 'Año'),
+    yaxis = list(title = 'Dinero'),
     legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
