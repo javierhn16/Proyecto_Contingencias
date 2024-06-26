@@ -25,7 +25,7 @@ source('code/setup.R')
 
 ## Primer ejercicio
 
-### Punto A
+### Punto A xd
 
 ```{r}
   tablas_activos <- proyeccion_demografica_activos(base_empleados, tablas_supen)
