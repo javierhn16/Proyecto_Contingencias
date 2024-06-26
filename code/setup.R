@@ -8,7 +8,8 @@ pacman::p_load(
   readr,
   ggplot2,
   plotly,
-  lubridate
+  lubridate,
+  xtable
 )
 
 # R scripts
