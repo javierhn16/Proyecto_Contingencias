@@ -13,9 +13,11 @@ descuento_anual <- function(cantidad){
 
 #Función para tomar las combinaciones únicas de edad y sexo
 unico <- function(data){
-  combinaciones_unicas <- data %>% 
-                          select(sexo,edad) %>% 
-                          distinct()
+  combinaciones_unicas <- data %>%
+    group_by(sexo, edad) %>%
+    slice(1) %>%  # Seleccionar la primera fila de cada grupo (sexo, edad)
+    ungroup() %>%
+    select(sexo, edad, id)
 }
 
 # Función de crecimiento geométrico para la inflación de las primas
@@ -146,7 +148,8 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
   
   # Resultados de primas 
   
-  Primas_individuales <- data.frame(Sexo = Base$sexo,
+  Primas_individuales <- data.frame(Empleado = Base$id,
+                                    Sexo = Base$sexo,
                                     Edad = Base$edad,
                                     Primas = tabla_resultados2$beneficios / tabla_resultados$anualidad,
                                     vp = tabla_resultados,
