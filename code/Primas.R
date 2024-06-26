@@ -11,6 +11,13 @@ descuento_anual <- function(cantidad){
   return(suma)
 }
 
+#Función para tomar las combinaciones únicas de edad y sexo
+unico <- function(data){
+  combinaciones_unicas <- data %>% 
+                          select(sexo,edad) %>% 
+                          distinct()
+}
+
 # Función de crecimiento geométrico para la inflación de las primas
 
 # x: Edad en que se asegura
@@ -35,13 +42,12 @@ Ia_Geometrica <- function(x, s, lista){
 
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
-# mes: mes de nacimiento 
 # lista: tabla de mortalidad 
 # suma_asegurada_activo: Beneficio en caso de ser empleado activo primer año
 # suma_asegurada_pensionado: Beneficio en caso de ser pensionado primer año
 # pension_mensual: Beneficio de la pensión mensual primer año
 
-valor_presente_beneficios <- function(x, s,mes, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
+valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
   # tasa anual
   i <- 0.07
   # Valor Presente en caso de fallecimiento 
@@ -75,13 +81,7 @@ valor_presente_beneficios <- function(x, s,mes, lista,suma_asegurada_activo,suma
       
       
     } #Al sobrepasar los 65 años, tiene seguro vitalicio y pensión vitalicia
-    else if (x + t - 1 == 65) {
-      monto_mes_pension = anualidad_pensión/sum(v^m)
-      VPF <- VPF + suma_asegurada_pensionado * (1.03)^t_p * v_t * p_x * q_t 
-      VPS <- VPS + (13-mes) * monto_mes_pension * (1.03)^(t - 1) * v_t * p_x
-      t_p <- t_p + 1
-    }
-    else if (x + t - 1 > 65) {
+    else if (x + t - 1 >= 65) {
       
       VPF <- VPF + suma_asegurada_pensionado * (1.03)^t_p * v_t * p_x * q_t 
       VPS <- VPS + anualidad_pensión * (1.03)^(t - 1) * v_t * p_x
@@ -133,20 +133,21 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 1){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1,Base$mes, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
       }
     } else if (Base$sexo[i] == 2){
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 2){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2,Base$mes, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
       }
     }
   }
   
   # Resultados de primas 
   
-  Primas_individuales <- data.frame(Empleado = Base$id,
+  Primas_individuales <- data.frame(Sexo = Base$sexo,
+                                    Edad = Base$edad,
                                     Primas = tabla_resultados2$beneficios / tabla_resultados$anualidad,
                                     vp = tabla_resultados,
                                     beneficios = tabla_resultados2)
