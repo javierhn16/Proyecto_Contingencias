@@ -122,6 +122,15 @@ Estas son las primas para cada empleado
 ```{r}
 Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000)
 
+#Base de empleados de combinaciones únicas 
+base_unicas<- unico(base_empleados)
+
+#Primas para empleados 
+Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000)
+Primas_unicas <- Primas_unicas%>%
+                  mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
+                  select(-c(`anualidad`,`beneficios`))
+
 ```
 
 ### Punto i
@@ -129,6 +138,7 @@ Para la prima nivelada, se toman la suma de las esperanzas de los beneficios fut
 valor presente de las primas futuras, dando como resultado la prima nivelada anual.
 ```{r}
 Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
+
 print(Prima_nivelada)
 ggplot(Primas, aes(x = log(Primas))) +
   geom_histogram(bins = 20, fill = "blue", color = "black") +
