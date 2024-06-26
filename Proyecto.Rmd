@@ -176,12 +176,13 @@ fig_proy_financiera_pension
 ### Punto h
 Estas son las primas para cada empleado
 ```{r}
+#Primas para empleados 
 Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000)
 
 #Base de empleados de combinaciones únicas 
 base_unicas<- unico(base_empleados)
 
-#Primas para empleados 
+#Primas para empleados, Hombre o Mujer y su respectiva edad 
 Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000)
 Primas_unicas <- Primas_unicas%>%
                   mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
