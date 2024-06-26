@@ -21,5 +21,14 @@ colnames(base_empleados) <- c('id', 'sexo', 'edad', 'mes')
 
 
 
+ABC <- read_excel('data/Base de datos.xlsx') %>%
+  mutate(
+    `Fecha de nacimiento` = 2023 - as.numeric(format(`Fecha de nacimiento`, "%Y")),
+    Sexo = as.numeric(recode(Sexo, 'M' = '1', 'F' = '2'))
+  )
+colnames(ABC)[2] <- "Edad"
+
+SUPEN <- read_excel("data/tavid2000-2150_original.xls") %>%
+  mutate(across(everything(), as.numeric))
 
 
