@@ -25,7 +25,7 @@ source('code/setup.R')
 
 ## Primer ejercicio
 
-### Punto A xd
+### Punto A
 
 ```{r}
   tablas_activos <- proyeccion_demografica_activos(base_empleados, tablas_supen)
@@ -46,6 +46,39 @@ fig_mujeres_vivas_activas
 ```
 
 ### Punto B
+```{r,echo=FALSE}
+source('code/Proyecciones_demograficas_pensionados.R')
+px <- px_acum(ABC, SUPEN)
+proy_poblacion <- calcular_poblacion_viva(px, proy_poblacion)
+proy_poblacion_muerta <- proy_poblacion
+proy_poblacion_muerta$poblacion_mujeres <- 228 - proy_poblacion$poblacion_mujeres
+proy_poblacion_muerta$poblacion_hombres <- 272 - proy_poblacion$poblacion_hombres
+proy_pensionados_vivos <- calcular_pensionados_vivos(px, proy_pensionados_vivos)
+proy_pensionados_muertos <- calcular_pensionados_muertos(px, proy_pensionados_muertos)
+```
+
+```{r,echo=FALSE}
+# Crear el df para las proyecciones de pensionados vivos
+proy_vivos <- data.frame(
+  Año = 2024:2120,
+  proy_vivas_mujeres = proy_pensionados_vivos$poblacion_mujeres,
+  proy_vivos_hombres = proy_pensionados_vivos$poblacion_hombres
+)
+
+# Grafico interactivo
+fig_pensionados_vivos <- plot_ly(proy_vivos, x = ~Año) %>%
+  add_lines(y = ~proy_vivas_mujeres, name = 'Mujeres', line = list(color = '#FFA0F5')) %>%
+  add_lines(y = ~proy_vivos_hombres, name = 'Hombres', line = list(color = '#92CFFF')) %>%
+  layout(
+    title = "Proyección Demográfica para Pensionados Vivos acumulados",
+    xaxis = list(title = 'Año'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Tipo de Pensionados Vivos:       '), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_pensionados_vivos
+```
+
 
 ### Punto C
 
@@ -60,6 +93,29 @@ fig_mujeres_muertes_activas
 
 
 ### Punto D
+```{r, echo=FALSE}
+# Crear el df para las proyecciones de pensionados muertos
+proy_muertos <- data.frame(
+  Año = 2024:2120,
+  proy_muertas_mujeres = proy_pensionados_muertos$poblacion_mujeres,
+  proy_muertos_hombres = proy_pensionados_muertos$poblacion_hombres
+)
+
+# Grafico interactivo
+fig_muertos <- plot_ly(proy_muertos, x = ~Año) %>%
+  add_lines(y = ~proy_muertas_mujeres, name = 'Mujeres', line = list(color = '#931986')) %>%
+  add_lines(y = ~proy_muertos_hombres, name = 'Hombres', line = list(color = '#193B7B')) %>%
+  layout(
+    title = "Proyección Demográfica para Pensionados Muertos acumulados",
+    xaxis = list(title = 'Año'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Tipo de Pensionados Muertos:          '), orientation = 'h', xanchor = 'center', x = 0.5)
+  )
+
+fig_muertos
+```
+
+
 
 ### Punto E
 Para esta sección, se toman las proyecciones demográficas ya hechas anteriormente.
