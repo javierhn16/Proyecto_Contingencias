@@ -1,10 +1,11 @@
 
 # Descuenta los pagos mensuales de la pensión un año para tener la anualidad anual
 
-descuento_anual <- function(cantidad){
+# bajo el supuesto de que 0.04 es la tasa convertible mensualmente
+#i <- 0.04/12
+
+descuento_anual <- function(cantidad,i){
   
-  # bajo el supuesto de que 0.04 es la tasa convertible mensualmente
-  i <- 0.04/12
   v <- 1/(1 + i)
   m <- 0:13
   suma <- cantidad * sum(v^m)
@@ -25,10 +26,10 @@ unico <- function(data){
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
 # lista: tabla de mortalidad 
-
-Ia_Geometrica <- function(x, s, lista){
-  #Dado que todo está en terminos anuales, se puede usar la i así
-  i <- 0.07
+#Dado que todo está en terminos anuales, se puede usar la tasa i así:
+#i <- 0.0712 = 0.04 + 0.03, dada la ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
+Ia_Geometrica <- function(x, s, lista,i){
+  
   #El v para un año
   v <- 1/(1 + i)
   # Auxiliar para obtener probabilidad de sobrevivencia acumulada
@@ -53,10 +54,11 @@ Ia_Geometrica <- function(x, s, lista){
 # suma_asegurada_activo: Beneficio en caso de ser empleado activo primer año
 # suma_asegurada_pensionado: Beneficio en caso de ser pensionado primer año
 # pension_mensual: Beneficio de la pensión mensual primer año
+#Dado que todo está en terminos anuales, se puede usar la tasa i así:
+#i <- 0.0712 = 0.04 + 0.03, dada la ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
 
-valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) {
-  # tasa anual
-  i <- 0.07
+valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,i) {
+  
   # Valor Presente en caso de fallecimiento 
   VPF <- 0  
   # Valor Presente en caso de sobrevivencia (pago pensión)
@@ -71,7 +73,7 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
   
   
   # Pensión anualizada
-  anualidad_pensión <- descuento_anual(pension_mensual)
+  anualidad_pensión <- descuento_anual(pension_mensual,0.04/12)
   
   for (t in 1:(nrow(lista[[s]]) - x)) {
     #Probabilidad de muerte en un año específico
@@ -108,9 +110,9 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
 #suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
 #suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
 #pension_mensual: Plan de pensión mensual
+#tasa: tasa tomando en cuenta la inflación, en este caso  0.0712 utilizando 0.04 tasa real y 0.033 dela inflación
 
-
-Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual){
+Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,tasa){
   # Crecimiento de la prima para cada empleado 
   
   tabla_resultados <- data.frame(anualidad = numeric(nrow(Base)))
@@ -120,13 +122,13 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 1){
         tabla_resultados$anualidad[i] <- tabla_resultados$anualidad[i-1]
       }else {
-        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$edad[i], 1, Tabla_mortal)
+        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$edad[i], 1, Tabla_mortal, tasa)
       }
     } else if (Base$sexo[i] == 2){
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 2) {
         tabla_resultados$anualidad[i] <- tabla_resultados$anualidad[i-1]
       }else{
-        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$edad[i], 2, Tabla_mortal)
+        tabla_resultados$anualidad[i] <- Ia_Geometrica(Base$edad[i], 2, Tabla_mortal, tasa)
       }
     }
   }
@@ -140,13 +142,13 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 1){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual) 
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 1, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,tasa) 
       }
     } else if (Base$sexo[i] == 2){
       if (Base$edad[i] == Base$edad[i-1] && (i-1) > 0 && Base$sexo[i-1] == 2){
         tabla_resultados2$beneficios[i] <- tabla_resultados2$beneficios[i-1]
       }else{
-        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual)
+        tabla_resultados2$beneficios[i] <- valor_presente_beneficios(Base$edad[i], 2, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,tasa)
       }
     }
   }
@@ -186,8 +188,8 @@ Proyeccion_financiera_muerte_pensionados <- function(proy_pensionados_muertos, s
 #proy_pensionados_vivos: Es la proyección de pensionados vivos
 #pension_mensual: monto de anualidad
 
-Proyeccion_financiera_pension <- function(proy_pensionados_vivos, pension_mensual) {
-  anualidad_pensión <- descuento_anual(pension_mensual)
+Proyeccion_financiera_pension <- function(proy_pensionados_vivos, pension_mensual,tasa) {
+  anualidad_pensión <- descuento_anual(pension_mensual,tasa)
   Proyeccion_financiera_anualidad <- data.frame(Anno = 2024:(2024 + nrow(proy_pensionados_vivos) - 1), anualidad = numeric(nrow(proy_pensionados_vivos)))
   
   for (e in 1:nrow(proy_pensionados_vivos)) {

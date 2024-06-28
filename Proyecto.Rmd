@@ -159,7 +159,7 @@ fig_proy_finan_muerte_pen
 
 ### Punto g
 ```{r}
-Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000)
+Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000,0.04/12)
 
 fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
   add_lines(y = ~anualidad, name = 'Proyeccion', line = list(color = '#698B69')) %>%
@@ -177,13 +177,13 @@ fig_proy_financiera_pension
 Estas son las primas para cada empleado
 ```{r}
 #Primas para empleados 
-Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000)
+Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000,0.0712)
 
 #Base de empleados de combinaciones únicas 
 base_unicas<- unico(base_empleados)
 
 #Primas para empleados, Hombre o Mujer y su respectiva edad 
-Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000)
+Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000,0.0712)
 Primas_unicas <- Primas_unicas%>%
                   mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
                   select(-c(`Empleado`,`anualidad`,`beneficios`))
@@ -226,7 +226,7 @@ La primera alternativa para reducir la prima 10%:
 # Suma asegurada de 5 millones durante el tiempo de ser empleado activo
 # Suma asegurada de 5 millones durante pensión 
 # Primer año de pensión con mensualidad de 266.520 colones
-Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266520)
+Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266520,0.0712)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
@@ -243,7 +243,7 @@ La Segunda alternativa para reducir la prima 10%:
 # Suma asegurada de 1 millón durante el tiempo de ser empleado activo
 # Suma asegurada de 1 millón durante pensión 
 # Primer año de pensión con mensualidad de 271.900 colones
-Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271900)
+Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271900,0.0712)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
