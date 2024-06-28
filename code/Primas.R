@@ -26,11 +26,13 @@ unico <- function(data){
 # x: Edad en que se asegura
 # s: sexo, 1 masculino, 2 femenino
 # lista: tabla de mortalidad 
-#Dado que todo está en terminos anuales, se puede usar la tasa i así:
-#i <- 0.0712 = 0.04 + 0.03, dada la ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
-Ia_Geometrica <- function(x, s, lista,i){
-  
-  #El v para un año
+# r: tasa real
+
+Ia_Geometrica <- function(x, s, lista,r){
+  # Dado que todo está en terminos anuales, se puede usar la tasa i así:
+  #i utilizando ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
+  i <- (1+r)*(1+0.03)-1
+  # El v para un año
   v <- 1/(1 + i)
   # Auxiliar para obtener probabilidad de sobrevivencia acumulada
   p_x <- 1
@@ -54,11 +56,12 @@ Ia_Geometrica <- function(x, s, lista,i){
 # suma_asegurada_activo: Beneficio en caso de ser empleado activo primer año
 # suma_asegurada_pensionado: Beneficio en caso de ser pensionado primer año
 # pension_mensual: Beneficio de la pensión mensual primer año
-#Dado que todo está en terminos anuales, se puede usar la tasa i así:
-#i <- 0.0712 = 0.04 + 0.03, dada la ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
+# r:tasa real
 
-valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,i) {
-  
+valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,r) {
+  #Dado que todo está en terminos anuales, se puede usar la tasa i así:
+  #i utilizando ecuación de fisher (1+i) = (1+tasa_real)(1+inflación)
+  i <- (1+r)*(1+0.03)-1
   # Valor Presente en caso de fallecimiento 
   VPF <- 0  
   # Valor Presente en caso de sobrevivencia (pago pensión)
@@ -73,7 +76,7 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
   
   
   # Pensión anualizada
-  anualidad_pensión <- descuento_anual(pension_mensual,0.04/12)
+  anualidad_pensión <- descuento_anual(pension_mensual,r/12)
   
   for (t in 1:(nrow(lista[[s]]) - x)) {
     #Probabilidad de muerte en un año específico
@@ -106,11 +109,11 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
 # Función para calculo de primas
 
 #Base : Base de empleados 
-#Tabla_mortal : Lista de las tabla de mortalidad separada por sexo: 1 (hombre), 2 (mujer)
-#suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
-#suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
-#pension_mensual: Plan de pensión mensual
-#tasa: tasa tomando en cuenta la inflación, en este caso  0.0712 utilizando 0.04 tasa real y 0.03 dela inflación
+# Tabla_mortal : Lista de las tabla de mortalidad separada por sexo: 1 (hombre), 2 (mujer)
+# suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
+# suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
+# pension_mensual: Plan de pensión mensual
+# tasa: tasa real
 
 Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,tasa){
   # Crecimiento de la prima para cada empleado 
@@ -168,8 +171,8 @@ Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo
 
 
 #Proyección financiera de beneficios de muerte para pensionados 
-#proy_pensionados_muertos: Es la proyección de pensionados que mueren
-#suma_asegurada_pensionados: Es la suma que se asegura para los pensionados en el contrato
+# proy_pensionados_muertos: Es la proyección de pensionados que mueren
+# suma_asegurada_pensionados: Es la suma que se asegura para los pensionados en el contrato
 
 Proyeccion_financiera_muerte_pensionados <- function(proy_pensionados_muertos, suma_asegurada_pensionados) {
   Proyeccion_beneficios_muerte_pensionados <- data.frame(Anno = 2024:(2024 + nrow(proy_pensionados_muertos) - 1), beneficio_muerte = numeric(nrow(proy_pensionados_muertos)))
@@ -185,11 +188,11 @@ Proyeccion_financiera_muerte_pensionados <- function(proy_pensionados_muertos, s
 
 
 #Proyección financiera de la anualidad
-#proy_pensionados_vivos: Es la proyección de pensionados vivos
-#pension_mensual: monto de anualidad
-
+# proy_pensionados_vivos: Es la proyección de pensionados vivos
+# pension_mensual: monto de anualidad
+# tasa: tasa real
 Proyeccion_financiera_pension <- function(proy_pensionados_vivos, pension_mensual,tasa) {
-  anualidad_pensión <- descuento_anual(pension_mensual,tasa)
+  anualidad_pensión <- descuento_anual(pension_mensual,tasa/12)
   Proyeccion_financiera_anualidad <- data.frame(Anno = 2024:(2024 + nrow(proy_pensionados_vivos) - 1), anualidad = numeric(nrow(proy_pensionados_vivos)))
   
   for (e in 1:nrow(proy_pensionados_vivos)) {

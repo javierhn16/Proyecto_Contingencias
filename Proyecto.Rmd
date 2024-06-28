@@ -159,7 +159,7 @@ fig_proy_finan_muerte_pen
 
 ### Punto g
 ```{r}
-Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000,0.04/12)
+Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000,0.04)
 
 fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
   add_lines(y = ~anualidad, name = 'Proyeccion', line = list(color = '#698B69')) %>%
@@ -179,13 +179,13 @@ tasa tomando en cuenta la inflación por medio de la ecuación de Fisher (1+i) =
 ```{r}
 
 #Primas para empleados 
-Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000,0.0712)
+Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000,0.04)
 
 #Base de empleados de combinaciones únicas 
 base_unicas<- unico(base_empleados)
 
 #Primas para empleados, Hombre o Mujer y su respectiva edad 
-Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000,0.0712)
+Primas_unicas <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000,0.04)
 Primas_unicas <- Primas_unicas%>%
                   mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
                   select(-c(`Empleado`,`anualidad`,`beneficios`))
@@ -228,7 +228,7 @@ La primera alternativa para reducir la prima 10%:
 # Suma asegurada de 5 millones durante el tiempo de ser empleado activo
 # Suma asegurada de 5 millones durante pensión 
 # Primer año de pensión con mensualidad de 266.520 colones
-Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266520,0.0712)
+Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266520,0.04)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
@@ -245,7 +245,7 @@ La Segunda alternativa para reducir la prima 10%:
 # Suma asegurada de 1 millón durante el tiempo de ser empleado activo
 # Suma asegurada de 1 millón durante pensión 
 # Primer año de pensión con mensualidad de 271.900 colones
-Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271900,0.0712)
+Primas2_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,1000000,1000000,271900,0.04)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 
@@ -295,6 +295,47 @@ fig_comparacion2 <- plot_ly(tabla_para_graficar, x = ~Empleado) %>%
 
 fig_comparacion2
 
+```
+
+```{r}
+#Primas para empleados, Hombre o Mujer y su respectiva edad 
+Primas_unicas_0.05 <- Calcula_prima_individuales(base_unicas,tablas_supen,5000000,1000000,300000,0.05)
+Primas_unicas_0.05 <- Primas_unicas_0.05%>%
+                  mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
+                  select(-c(`Empleado`,`anualidad`,`beneficios`))
+
+tabla_para_graficar_distinta_tasa <- data.frame( sexo = Primas_unicas$Sexo,
+                                                 edad = Primas_unicas$Edad,
+                                                 primas_normales = Primas_unicas$Primas,
+                                                 primas_tasa_aumentada = Primas_unicas_0.05$Primas)
+
+tabla_distinta_tasa_hombres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Hombre", ]
+tabla_distinta_tasa_mujeres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Mujer", ]
+```
+
+```{r}
+# Grafico interactivo
+fig_primas_tasas_distintas_hombres <- plot_ly(tabla_distinta_tasa_hombres, x = ~edad) %>%
+  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#931986')) %>%
+  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#193B7B')) %>%
+  layout(
+    title = "Comparación de primas si la tasa real de rendimiento aumentara vs original para hombres",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Primas')
+  )
+fig_primas_tasas_distintas_hombres
+```
+```{r}
+# Grafico interactivo
+fig_primas_tasas_distintas_mujeres <- plot_ly(tabla_distinta_tasa_mujeres, x = ~edad) %>%
+  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#931986')) %>%
+  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#193B7B')) %>%
+  layout(
+    title = "Comparación de primas si la tasa real de rendimiento aumentara vs original para mujeres",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Primas')
+  )
+fig_primas_tasas_distintas_mujeres
 ```
 
 ```{r}
