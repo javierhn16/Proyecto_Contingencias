@@ -21,7 +21,7 @@ data_tbp_long <- data_tbp %>%
 
 # Empleados
 
-frecuencias <- base_empleados %>%
+empleados <- base_empleados %>%
   group_by(edad, sexo) %>%
   summarise(n = n()) %>%
   ungroup() %>%
