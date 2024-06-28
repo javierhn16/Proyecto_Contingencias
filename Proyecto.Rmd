@@ -22,6 +22,9 @@ knitr::opts_chunk$set(warning = FALSE)
 source('code/setup.R')
 ```
 
+## Antencedentes
+
+
 
 ## Primer ejercicio
 
@@ -35,14 +38,8 @@ llamamos es script con los gráficos.
 source('code/graficos_activos.R')
 ```
 
-#### Caso hombres
-
 ```{r}
-fig_hombres_vivos_activos
-```
-#### Caso mujeres
-```{r}
-fig_mujeres_vivas_activas
+fig_activos_vivos
 ```
 
 ### Punto B
@@ -84,11 +81,7 @@ fig_pensionados_vivos
 
 #### Caso hombres 
 ```{r}
-fig_hombres_muertes_activos
-```
-#### Caso mujeres
-```{r}
-fig_mujeres_muertes_activas
+fig_activos_muertos
 ```
 
 
