@@ -22,8 +22,96 @@ knitr::opts_chunk$set(warning = FALSE)
 source('code/setup.R')
 ```
 
-## Antencedentes
+## Antecedentes
 
+```{r}
+source('code/antecedentes.R')
+```
+### Variacion Interanual
+
+```{r}
+ggplot(var_interanual, aes(x = anyos, y = variacion_interanual * 100)) +
+  geom_line(color = "olivedrab4", linewidth = 1) +
+  geom_point(color = "black", linewidth = 2) +
+  geom_label(aes(label = round(variacion_interanual * 100, 2)), vjust = 0.25, color = "black") +
+  labs(title = "Variación internual según el año",
+       x = "Años",
+       y = "Valor (%)") +
+  scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+### Tasa básica pasiva
+
+```{r}
+ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
+  geom_line() +
+  labs(title = "Tasa Básica Pásiva lo largo de los Años",
+       x = "Años",
+       y = "Tasa (%)",
+       color = "Años") +
+      theme(plot.title = element_text(hjust = 0.5))
+  #theme_minimal()
+```
+### Poblaciones
+#### Tasas de mortalidad
+
+```{r}
+    ggplot(poblacion_limpia, aes(x = Annos)) +
+      geom_line(aes(y = Tasa_Mortalidad_H, color = "Hombres"), size = 1) +
+      geom_point(aes(y = Tasa_Mortalidad_H), shape = 22, fill = "black", color = "black", size = 2) +
+      geom_label(aes(y = Tasa_Mortalidad_H, label = round(Tasa_Mortalidad_H, 2)), vjust = -0.5, color = "black") +
+      
+      geom_line(aes(y = Tasa_Mortalidad_M, color = "Mujeres"), size = 1) +
+      geom_point(aes(y = Tasa_Mortalidad_M), shape = 22, fill = "black", color = "black", size = 2) +
+      geom_label(aes(y = Tasa_Mortalidad_M, label = round(Tasa_Mortalidad_M, 2)), vjust = -0.5, color = "black") +
+      
+      labs(title = "Tasa de mortalidad por año según el género",
+           x = "Años",
+           y = "Tasa(%") +
+      scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+      scale_color_manual(values = c("Mujeres" = "#FFA0F5", "Hombres" = "royalblue4")) +
+      ylim(3.70, 7) +
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5))
+```
+
+#### Esperanzas al nacer
+
+```{r}
+  ggplot(poblacion_limpia, aes(x = Annos)) +
+    geom_line(aes(y = Esperanza_H, color = "Hombres"), size = 1) +
+    geom_point(aes(y = Esperanza_H), shape = 22, fill = "black", color = "black", size = 2) +
+    geom_label(aes(y = Esperanza_H, label = round(Esperanza_H, 2)), vjust = -0.75, color = "black") +
+    
+    geom_line(aes(y = Esperanza_M, color = "Mujeres"), size = 1) +
+    geom_point(aes(y = Esperanza_M), shape = 22, fill = "black", color = "black", size = 2) +
+    geom_label(aes(y = Esperanza_M, label = round(Esperanza_M, 2)), vjust = -0.75, color = "black") +
+    
+    labs(title = "Esperanza de vida al nacer por año según el género",
+         x = "Años",
+         y = "Esperanza de años") +
+    scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
+    scale_color_manual(values = c("Mujeres" = "#FFA0F5", "Hombres" = "royalblue4")) +
+    ylim(77, 85) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.5))
+```
+
+### Empleados de la empresa ABC
+
+```{r}
+gg <- ggplot(empleados, aes(x = factor(edad), y = n, fill = Sexo_Nombre)) +
+      geom_bar(stat = "identity", position = "stack") +
+      labs(x = "Edad", y = "Cantidad", fill = "Sexo", title = "Cantidad de empleados por edad y sexo") +
+      scale_fill_manual(values = c("Hombres" = "royalblue4", "Mujeres" = "#FFA0F5")) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = element_text(hjust = 0.5))
+
+p <- ggplotly(gg)
+p
+```
 
 
 ## Primer ejercicio
@@ -79,7 +167,7 @@ fig_pensionados_vivos
 
 ### Punto C
 
-#### Caso hombres 
+
 ```{r}
 fig_activos_muertos
 ```
