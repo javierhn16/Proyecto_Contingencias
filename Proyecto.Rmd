@@ -140,7 +140,7 @@ fig_proy_financiera
 
 
 
-### Punto f
+### Punto F
 ```{r}
 Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
 
@@ -157,7 +157,7 @@ fig_proy_finan_muerte_pen
 
 ```
 
-### Punto g
+### Punto G
 ```{r}
 Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000,0.04)
 
@@ -173,7 +173,7 @@ fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
 fig_proy_financiera_pension
 ```
 
-### Punto h
+### Punto H
 Estas son las primas para cada empleado
 tasa tomando en cuenta la inflación por medio de la ecuación de Fisher (1+i) = (1+tasa_real)(1+inflación), en este caso  0.0712 utilizando 0.04 tasa real y 0.03 de la inflación.
 ```{r}
@@ -195,7 +195,7 @@ tabla_latex_primas_unicas <- xtable(Primas_unicas)
 print(tabla_latex_primas_unicas)
 ```
 
-### Punto i
+### Punto I
 Para la prima nivelada, se toman la suma de las esperanzas de los beneficios futuros y se divide por la suma de las esperanza del 
 valor presente de las primas futuras, dando como resultado la prima nivelada anual.
 ```{r}
@@ -212,7 +212,7 @@ ggplot(Primas, aes(x = log(Primas))) +
 
 ```
 
-### Punto j
+### Punto J
 
 Dado que la idea de este ejercicio es reducir las primas un 10%, calculo cuál es la suma que representa el 90% de las primas originales,
 para acercarnos a ellas.
@@ -338,7 +338,5 @@ fig_primas_tasas_distintas_mujeres <- plot_ly(tabla_distinta_tasa_mujeres, x = ~
 fig_primas_tasas_distintas_mujeres
 ```
 
-```{r}
 
-```
 
