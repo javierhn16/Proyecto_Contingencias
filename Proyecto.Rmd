@@ -225,8 +225,8 @@ La primera alternativa para reducir la prima 10%:
 # Se calculan primas con:
 # Suma asegurada de 5 millones durante el tiempo de ser empleado activo
 # Suma asegurada de 5 millones durante pensión 
-# Primer año de pensión con mensualidad de 266.500 colones
-Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266500)
+# Primer año de pensión con mensualidad de 266.520 colones
+Primas1_menos_10 <- Calcula_prima_individuales(base_empleados,tablas_supen,5000000,5000000,266520)
 
 #se usa regla de 3 para verificar que la nueva prima sea aproximadamente el 90% de la original
 Verifica1_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_porciento, 

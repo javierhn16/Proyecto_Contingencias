@@ -31,11 +31,16 @@ Ia_Geometrica <- function(x, s, lista){
   i <- 0.07
   #El v para un año
   v <- 1/(1 + i)
+  # Auxiliar para obtener probabilidad de sobrevivencia acumulada
+  p_x <- 1
   # m: Tiempo máximo de pago, dado que se retiran a los 65 
   m <- 65 - x
   suma <- 0
   for (t in 1:m){
-    suma <- suma + (v^(t)) * (1.03)^(t-1) * as.double(1 - lista[[s]][x + t - 1, 25 + t - 1])
+    suma <- suma + (v^(t-1)) * (1.03)^(t-1) * p_x
+    
+    #Probabilidad de sobrevivencia acumulada
+    p_x <- p_x * (as.double(1 - lista[[s]][x + t - 1, 25 + t - 1]))
   }
   return(suma)
 }
