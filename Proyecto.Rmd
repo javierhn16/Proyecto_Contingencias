@@ -29,7 +29,7 @@ source('code/antecedentes.R')
 ```
 ### Variacion Interanual
 
-```{r}
+```{r,echo=FALSE}
 ggplot(var_interanual, aes(x = anyos, y = variacion_interanual * 100)) +
   geom_line(color = "olivedrab4", linewidth = 1) +
   geom_point(color = "black", linewidth = 2) +
@@ -44,7 +44,7 @@ ggplot(var_interanual, aes(x = anyos, y = variacion_interanual * 100)) +
 
 ### Tasa básica pasiva
 
-```{r}
+```{r,echo=FALSE}
 ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
   geom_line() +
   labs(title = "Tasa Básica Pásiva lo largo de los Años",
@@ -57,7 +57,7 @@ ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
 ### Poblaciones
 #### Tasas de mortalidad
 
-```{r}
+```{r,echo=FALSE}
     ggplot(poblacion_limpia, aes(x = Annos)) +
       geom_line(aes(y = Tasa_Mortalidad_H, color = "Hombres"), size = 1) +
       geom_point(aes(y = Tasa_Mortalidad_H), shape = 22, fill = "black", color = "black", size = 2) +
@@ -79,7 +79,7 @@ ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
 
 #### Esperanzas al nacer
 
-```{r}
+```{r,echo=FALSE}
   ggplot(poblacion_limpia, aes(x = Annos)) +
     geom_line(aes(y = Esperanza_H, color = "Hombres"), size = 1) +
     geom_point(aes(y = Esperanza_H), shape = 22, fill = "black", color = "black", size = 2) +
@@ -101,7 +101,7 @@ ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
 
 ### Empleados de la empresa ABC
 
-```{r}
+```{r,echo=FALSE}
 gg <- ggplot(empleados, aes(x = factor(edad), y = n, fill = Sexo_Nombre)) +
       geom_bar(stat = "identity", position = "stack") +
       labs(x = "Edad", y = "Cantidad", fill = "Sexo", title = "Cantidad de empleados por edad y sexo") +
@@ -206,7 +206,7 @@ En primer lugar, creamos las tablas en cuestión que nos ayudarán a graficar.
 tablas_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
 ```
 
-```{r}
+```{r,echo=FALSE}
 fig_proy_financiera <- plot_ly(tablas_proy_fin, x = ~Annos) %>%
   add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
@@ -222,7 +222,7 @@ fig_proy_financiera
 
 
 ### Punto F
-```{r}
+```{r,echo=FALSE}
 Proyeccion_beneficios_muerte_pensionados <- Proyeccion_financiera_muerte_pensionados(proy_pensionados_muertos = proy_pensionados_muertos, suma_asegurada_pensionados = 1000000)
 
 fig_proy_finan_muerte_pen <- plot_ly(Proyeccion_beneficios_muerte_pensionados, x = ~Anno) %>%
@@ -239,7 +239,7 @@ fig_proy_finan_muerte_pen
 ```
 
 ### Punto G
-```{r}
+```{r,echo=FALSE}
 Proyeccion_pension <- Proyeccion_financiera_pension(proy_pensionados_vivos = proy_pensionados_vivos, pension_mensual = 300000,0.04)
 
 fig_proy_financiera_pension <- plot_ly(Proyeccion_pension, x = ~Anno) %>%
@@ -279,7 +279,7 @@ print(tabla_latex_primas_unicas)
 ### Punto I
 Para la prima nivelada, se toman la suma de las esperanzas de los beneficios futuros y se divide por la suma de las esperanza del 
 valor presente de las primas futuras, dando como resultado la prima nivelada anual.
-```{r}
+```{r,echo=FALSE}
 Prima_nivelada <- (sum(Primas$beneficios) / sum(Primas$anualidad) )
 
 print(Prima_nivelada)
@@ -337,7 +337,7 @@ Verifica2_90_porciento = data.frame(original_90 = Primas_90_porciento$Menos_10_p
 print(sum(Verifica2_90_porciento$porcentaje)/nrow(Verifica2_90_porciento))
 ```
 
-```{r}
+```{r,echo=FALSE}
 
 
 tabla_para_graficar <- data.frame(Empleado = Primas$Empleado,
@@ -360,7 +360,7 @@ tabla_para_graficar <- data.frame(Empleado = Primas$Empleado,
 fig_comparacion1
 ```
 
-```{r}
+```{r,echo=FALSE}
 
 fig_comparacion2 <- plot_ly(tabla_para_graficar, x = ~Empleado) %>%
   add_trace(y = ~original, name = 'Original', type = 'bar', marker = list(color = '#92CFFF')) %>%
@@ -394,11 +394,11 @@ tabla_distinta_tasa_hombres <- tabla_para_graficar_distinta_tasa[tabla_para_graf
 tabla_distinta_tasa_mujeres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Mujer", ]
 ```
 
-```{r}
+```{r,echo=FALSE}
 # Grafico interactivo
 fig_primas_tasas_distintas_hombres <- plot_ly(tabla_distinta_tasa_hombres, x = ~edad) %>%
-  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#931986')) %>%
-  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#193B7B')) %>%
+  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#0059FF')) %>%
+  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#001E55')) %>%
   layout(
     title = "Comparación de primas si la tasa real de rendimiento aumentara vs original para hombres",
     xaxis = list(title = 'Edad'),
@@ -406,11 +406,12 @@ fig_primas_tasas_distintas_hombres <- plot_ly(tabla_distinta_tasa_hombres, x = ~
   )
 fig_primas_tasas_distintas_hombres
 ```
-```{r}
+
+```{r,echo=FALSE}
 # Grafico interactivo
 fig_primas_tasas_distintas_mujeres <- plot_ly(tabla_distinta_tasa_mujeres, x = ~edad) %>%
-  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#931986')) %>%
-  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#193B7B')) %>%
+  add_lines(y = ~primas_normales, name = 'Original', line = list(color = '#F57AFF')) %>%
+  add_lines(y = ~primas_tasa_aumentada, name = 'Tasa aumentada', line = list(color = '#660468')) %>%
   layout(
     title = "Comparación de primas si la tasa real de rendimiento aumentara vs original para mujeres",
     xaxis = list(title = 'Edad'),
