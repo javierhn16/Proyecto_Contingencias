@@ -203,17 +203,20 @@ Para esta sección, se toman las proyecciones demográficas ya hechas anteriorme
 
 En primer lugar, creamos las tablas en cuestión que nos ayudarán a graficar.
 ```{r}
-tablas_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
+tabla_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
 ```
 
 ```{r,echo=FALSE}
-fig_proy_financiera <- plot_ly(tablas_proy_fin, x = ~Annos) %>%
-  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#698B69')) %>%
+fig_proy_financiera <- plot_ly(tabla_proy_fin, x = ~Annos) %>%
+  add_bars(y = ~Total.1, name = 'Hombres', marker = list(color = 'royalblue4')) %>%
+  add_bars(y = ~Total.2, name = 'Mujeres', marker = list(color = '#931986')) %>%
   layout(
-    title = "Proyeccion financiera de activos vivos según el año",
-    xaxis = list(title = 'Edad'),
-    yaxis = list(title = 'Personas'),
-    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
+    title = "Proyeccion financiera de los beneficios de los empleados activos según el año y sexo",
+    xaxis = list(title = list(text = 'Años', standoff = 12)),
+    yaxis = list(title = 'Monto'),
+    barmode = 'stack',
+    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5),
+    margin = list(b = 50, t = 50)
   )
 
 fig_proy_financiera
