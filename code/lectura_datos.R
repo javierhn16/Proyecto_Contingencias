@@ -17,10 +17,9 @@ base_empleados <- base_empleados %>%
   select(-`Fecha de nacimiento`)
 
 # Limpia los nombres de la base_empleados
-colnames(base_empleados) <- c('id', 'sexo', 'edad', 'mes')
+colnames(base_empleados) <- c('id', 'sexo', 'edad')
 
-
-
+# Extra (es lo mismo de antes)
 ABC <- read_excel('data/Base de datos.xlsx') %>%
   mutate(
     `Fecha de nacimiento` = 2023 - as.numeric(format(`Fecha de nacimiento`, "%Y")),
