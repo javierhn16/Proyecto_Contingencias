@@ -420,5 +420,8 @@ fig_primas_tasas_distintas_mujeres <- plot_ly(tabla_distinta_tasa_mujeres, x = ~
 fig_primas_tasas_distintas_mujeres
 ```
 
+```{r}
+
+```
 
 

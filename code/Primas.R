@@ -1,12 +1,11 @@
 
 # Descuenta los pagos mensuales de la pensión un año para tener la anualidad anual
 
-# bajo el supuesto de que 0.04 es la tasa convertible mensualmente
-#i <- 0.04/12
+# bajo el supuesto de que 0.04 es la tasa efectiva 
 
 descuento_anual <- function(cantidad,i){
-  
-  v <- 1/(1 + i)
+  j<-((1+i)^(1/12))-1
+  v <- 1/(1 + j)
   m <- 0:13
   suma <- cantidad * sum(v^m)
   return(suma)
