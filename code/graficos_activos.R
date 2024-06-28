@@ -17,10 +17,11 @@ fig_activos_vivos <- plot_ly(proy_activos, x = ~Annos) %>%
   add_bars(y = ~Mujeres_Vivas, name = 'Mujeres', marker = list(color = '#931986')) %>%
   layout(
     title = "Personas activas vivas según el año y sexo",
-    xaxis = list(title = 'Años'),
+    xaxis = list(title = list(text = 'Años', standoff = 12)),
     yaxis = list(title = 'Personas'),
     barmode = 'stack',
-    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5)
+    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5),
+    margin = list(b = 50, t = 50)
   )
 
 ## Caso muertos
@@ -30,8 +31,9 @@ fig_activos_muertos <- plot_ly(proy_activos, x = ~Annos) %>%
   add_bars(y = ~Muertes_muj_acumuladas, name = 'Mujeres', marker = list(color = '#931986')) %>%
   layout(
     title = "Muertes acumuladas de empleados activos vivos según el año y sexo",
-    xaxis = list(title = 'Años'),
+    xaxis = list(title = list(text = 'Años', standoff = 12)),
     yaxis = list(title = 'Personas'),
     barmode = 'stack',
-    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5)
+    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5),
+    margin = list(b = 50, t = 50)
   )
