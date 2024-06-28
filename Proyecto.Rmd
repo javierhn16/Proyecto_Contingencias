@@ -175,7 +175,9 @@ fig_proy_financiera_pension
 
 ### Punto h
 Estas son las primas para cada empleado
+tasa tomando en cuenta la inflación por medio de la ecuación de Fisher (1+i) = (1+tasa_real)(1+inflación), en este caso  0.0712 utilizando 0.04 tasa real y 0.03 dela inflación
 ```{r}
+
 #Primas para empleados 
 Primas<-Calcula_prima_individuales(base_empleados,tablas_supen,5000000,1000000,300000,0.0712)
 

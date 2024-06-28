@@ -110,7 +110,7 @@ valor_presente_beneficios <- function(x, s, lista,suma_asegurada_activo,suma_ase
 #suma_asegurada_activo: Suma del seguro en caso de ser empleado activo y fallecer
 #suma_asegurada_pensionado: Suma de seguro en caso de ser pensionadoi y fallecer 
 #pension_mensual: Plan de pensión mensual
-#tasa: tasa tomando en cuenta la inflación, en este caso  0.0712 utilizando 0.04 tasa real y 0.033 dela inflación
+#tasa: tasa tomando en cuenta la inflación, en este caso  0.0712 utilizando 0.04 tasa real y 0.03 dela inflación
 
 Calcula_prima_individuales <- function (Base, Tabla_mortal,suma_asegurada_activo,suma_asegurada_pensionado,pension_mensual,tasa){
   # Crecimiento de la prima para cada empleado 
