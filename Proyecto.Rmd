@@ -55,6 +55,7 @@ ggplot(data_tbp_long, aes(x = Date, y = Rate)) +
   #theme_minimal()
 ```
 ### Poblaciones
+
 #### Tasas de mortalidad
 
 ```{r,echo=FALSE}
