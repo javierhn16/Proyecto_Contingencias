@@ -273,9 +273,7 @@ Primas_unicas <- Primas_unicas%>%
                   mutate(Sexo = if_else(Sexo == 1,'Hombre', 'Mujer')) %>%
                   select(-c(`Empleado`,`anualidad`,`beneficios`))
 
-tabla_latex_primas_unicas <- xtable(Primas_unicas)
 
-print(tabla_latex_primas_unicas)
 ```
 
 ### Punto I
@@ -397,18 +395,6 @@ tabla_distinta_tasa_hombres <- tabla_para_graficar_distinta_tasa[tabla_para_graf
 tabla_distinta_tasa_mujeres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Mujer", ]
 ```
 
-
-```{r}
-tabla_latex_primas_unicas_hombres <- xtable(tabla_distinta_tasa_hombres)
-
-print(tabla_latex_primas_unicas_hombres)
-```
-
-```{r}
-tabla_latex_primas_unicas_hombres <- xtable(tabla_distinta_tasa_mujeres)
-
-print(tabla_latex_primas_unicas_hombres)
-```
 
 ```{r,echo=FALSE}
 # Grafico interactivo
