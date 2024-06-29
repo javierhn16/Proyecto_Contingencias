@@ -56,9 +56,9 @@ realizar_simulaciones <- function(dataframe, num_simulaciones, tasa_rendimiento)
   v <- (1 + tasa_interes_nominal) ^ -(1:95)
   
   # Vector con el monto de la pension anual más inflación
-  tasa_mensual <- (1 + tasa_rendimiento) ^ (1/12) - 1
-  monto_pension_anual <- (300000 * anualidad(tasa_mensual, 12) + 
-                            300000 * (1 + tasa_mensual) ^ (-12)) * (1 + tasa_inflacion) ^ c(1:95)
+  tasa_mensual <- (1 + tasa_interes_nominal) ^ (1/12) - 1
+  monto_pension_anual <- (300000 * anualidad(tasa_mensual, 12) +
+                            30000 * (1 + tasa_mensual) ^ (-12)) * (1 + tasa_inflacion) ^ c(1:95)
   
   # Lista para guardar los resultados
   primas_estocasticas <- list()
@@ -88,17 +88,17 @@ realizar_simulaciones <- function(dataframe, num_simulaciones, tasa_rendimiento)
       
       # Calcula el valor presente de la pensión que recibió
       if (!is.na(anios_pensionados[i]) && anios_pensionados[i] > 0) {
-        vp_pension <- sum(v[anios_hasta_pension[i]:(anios_hasta_pension[i] + anios_pensionados[i])] * 
-                            monto_pension_anual[anios_hasta_pension[i]:(anios_hasta_pension[i] + anios_pensionados[i])])
+        vp_pension <- sum(v[(anios_hasta_pension[i] + 1):(anios_hasta_pension[i] + anios_pensionados[i])] * 
+                            monto_pension_anual[(anios_hasta_pension[i] + 1):(anios_hasta_pension[i] + anios_pensionados[i])])
       } else {
         vp_pension <- 0 
       }
       
       # Calcula (en caso de morir) el valor presente del beneficio 
-      if (edad_muerte[i] >= 65) {
-        beneficio_vp <- 1000000 * (1 + tasa_interes_nominal) ^ -(anio_muerte[i])
+      if (edad_muerte[i] >= 65 && !is.na(edad_muerte[i])) {
+        beneficio_vp <- 1000000 * (1 + tasa_interes_nominal) ^ -(anio_muerte[i]) * (1 + tasa_inflacion) ^ (anio_muerte[i])
       } else {
-        beneficio_vp <- 0
+        beneficio_vp <- 5000000 * (1 + tasa_interes_nominal) ^ -(anio_muerte[i]) * (1 + tasa_inflacion) ^ (anio_muerte[i])
       }
       return(vp_pension + beneficio_vp)
     })
@@ -107,43 +107,29 @@ realizar_simulaciones <- function(dataframe, num_simulaciones, tasa_rendimiento)
     suma_vp_anualidades <- sapply(1:length(anios_pensionados), function(i) {
       
       # Si la persona llegó a pensionarse, calcula el valor presente de la anualidad
-      if (edad_muerte[i] >= 65) {
-        vp_anualidad <- anualidad(tasa_rendimiento, anios_hasta_pension[i])
-        primas_estocasticas[[sim]] <<- suma_vp_pensiones / vp_anualidad
+      if (edad_muerte[i] >= 65 && !is.na(edad_muerte[i])) {
+        vp_anualidad <- anualidad(tasa_interes_nominal, anios_hasta_pension[i])
       } else {
-        primas_estocasticas[[sim]] <<- (5000000 * (1 + tasa_interes_nominal) ^ -(anio_muerte[i])) / 
-          anualidad(tasa_rendimiento, anio_muerte[i])
+        vp_anualidad <- anualidad(tasa_rendimiento, anio_muerte[i])
       }
+      return(vp_anualidad)
     })
-  
-    print(sim) ################### BORRAR!!!!!!!
+    
+    primas_estocasticas[[sim]] <- suma_vp_pensiones / suma_vp_anualidades
+    print(sim) # Indicador del estado de las simulaciones
   }
   
-  # Calcula  el promedio de las primas por entrada
-  promedio_primas <- sapply(seq_along(primas_estocasticas[[1]]), function(j) {
-    mean(sapply(primas_estocasticas, function(prima_sim) prima_sim[j]))
+  # Calcular cuartiles 50 y 90 de cada posición en los vectores de la lista
+  cuartiles <- sapply(seq_along(primas_estocasticas[[1]]), function(j) {
+    valores_j <- sapply(primas_estocasticas, function(x) x[j])
+    quantiles <- quantile(valores_j, probs = c(0.50, 0.90), na.rm = TRUE)
+    return(quantiles)
   })
   
-  return(list('ano muerte' = anio_muerte, 'hasta pension' = anios_hasta_pension, 'anos pensionados' = anios_pensionados, primas = primas_estocasticas))
+  return(cuartiles)
 }
-
-
-# Calculo de cuartiles ----------------------------------------------------
-
-calcular_cuartiles <- function(vector_primas) {
-  
-  # Calcula la mediana (cuartil 50)
-  cuartil_50 <- median(vector_primas)
-  
-  # Calcula el cuartil 90
-  cuartil_90 <- quantile(vector_primas, probs = 0.9)
-  
-  # Devolver los resultados como un vector
-  return(list('Cuartil 50' = cuartil_50, 'Cuartil 90' = cuartil_90))
-}
-
 
 t <- proc.time()
-realizar_simulaciones(base_empleados, 3, 0.04)
+realizar_simulaciones(base_empleados, 5000, 0.04)
 proc.time() - t
 
