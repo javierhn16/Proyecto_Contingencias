@@ -129,7 +129,8 @@ realizar_simulaciones <- function(dataframe, num_simulaciones, tasa_rendimiento)
   return(cuartiles)
 }
 
-t <- proc.time()
-realizar_simulaciones(base_empleados, 5000, 0.04)
-proc.time() - t
+# Ejecucion del modelo estocástico
+# t <- proc.time()
+# realizar_simulaciones(base_empleados, 100000, 0.04)
+# proc.time() - t
 
