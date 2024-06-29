@@ -22,3 +22,5 @@ source('code/Proyeccion_demografica_activos.R')
 source('code/proyeccion_financiera.R')
 
 source('code/Proyecciones_demograficas_pensionados.R')
+
+source('code/modelo_estocastico_2.R')
