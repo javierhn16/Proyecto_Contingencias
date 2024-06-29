@@ -134,3 +134,24 @@ realizar_simulaciones <- function(dataframe, num_simulaciones, tasa_rendimiento)
 # realizar_simulaciones(base_empleados, 100000, 0.04)
 # proc.time() - t
 
+# primas_cuartiles <- realizar_simulaciones(base_empleados, 100000, 0.04)
+# 
+# primas_cuartiles_t <- t(primas_cuartiles)
+# 
+# combinaciones_unicas <- base_empleados %>%
+#   arrange(edad, sexo) %>% 
+#   select(edad, sexo) %>%
+#   distinct()
+# 
+# resultados <- cbind(combinaciones_unicas, primas_cuartiles_t)
+# colnames(resultados) <- c('Edad', 'Sexo', 'Cuartil 50', 'Cuartil 90')
+# 
+# resultados_hombres <- subset(resultados, Sexo == '1') %>% select(-Sexo)
+# resultados_mujeres <- subset(resultados, Sexo == '2') %>% select(-Sexo)
+# 
+# # Convertir el dataframe a una tabla de LaTeX
+# tabla_hombres <- xtable(resultados_hombres, caption = "Primas para los hombres según el modelo estocástico")
+# tabla_mujeres <- xtable(resultados_mujeres, caption = "Primas para las mujeres según el modelo estocástico")
+# 
+# write.csv(primas_cuartiles_t, "docs/primas_cuartiles_t.csv", row.names = FALSE)
+

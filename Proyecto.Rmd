@@ -422,8 +422,43 @@ fig_primas_tasas_distintas_mujeres <- plot_ly(tabla_distinta_tasa_mujeres, x = ~
 fig_primas_tasas_distintas_mujeres
 ```
 
-```{r}
-
+## Modelo estocástico
+El siguiente chunck puede ejecutar las simulaciones, pero para efectos del informe, se tienen los valores guardados en un csv
+El mismo corre 100.000 simulaciones, en aproximadamente 3,5 minutos
+```{r, eval=FALSE}
+primas_modelo_estocastico <- realizar_simulaciones(base_empleados, 100000, 0.04)
 ```
+
+Se importan los resultados de las simulaciones
+```{r}
+simulaciones <- read_csv('docs/primas_cuartiles_t.csv')
+
+combinaciones_unicas <- base_empleados %>%
+  arrange(edad, sexo) %>% 
+  select(edad, sexo) %>%
+  distinct()
+```
+
+```{r}
+resultados <- cbind(combinaciones_unicas, simulaciones)
+colnames(resultados) <- c('Edad', 'Sexo', 'Cuartil 50', 'Cuartil 90')
+
+resultados_hombres <- subset(resultados, Sexo == '1') %>% select(-Sexo)
+resultados_mujeres <- subset(resultados, Sexo == '2') %>% select(-Sexo)
+```
+
+# Resultados de las primas para hombres
+```{r}
+resultados_hombres
+```
+
+# Resultados de las primas para mujeres
+```{r}
+resultados_mujeres
+```
+
+
+
+
 
 
