@@ -203,20 +203,17 @@ Para esta sección, se toman las proyecciones demográficas ya hechas anteriorme
 
 En primer lugar, creamos las tablas en cuestión que nos ayudarán a graficar.
 ```{r}
-tabla_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
+tablas_proy_fin <- proyeccion_financiera(tablas_activos, inflacion =  0.03)
 ```
 
 ```{r,echo=FALSE}
-fig_proy_financiera <- plot_ly(tabla_proy_fin, x = ~Annos) %>%
-  add_bars(y = ~Total.1, name = 'Hombres', marker = list(color = 'royalblue4')) %>%
-  add_bars(y = ~Total.2, name = 'Mujeres', marker = list(color = '#931986')) %>%
+fig_proy_financiera <- plot_ly(tablas_proy_fin, x = ~Annos) %>%
+  add_lines(y = ~Total, name = 'Proyeccion', line = list(color = '#698B69')) %>%
   layout(
-    title = "Proyeccion financiera de los beneficios de los empleados activos según el año y sexo",
-    xaxis = list(title = list(text = 'Años', standoff = 12)),
-    yaxis = list(title = 'Monto'),
-    barmode = 'stack',
-    legend = list(title = list(text = 'Sexo'), orientation = 'h', xanchor = 'center', x = 0.5),
-    margin = list(b = 50, t = 50)
+    title = "Proyeccion financiera de activos vivos según el año",
+    xaxis = list(title = 'Edad'),
+    yaxis = list(title = 'Personas'),
+    legend = list(title = list(text = 'Estado'), orientation = 'h', xanchor = 'center', x = 0.5)
   )
 
 fig_proy_financiera
@@ -391,10 +388,24 @@ Primas_unicas_0.05 <- Primas_unicas_0.05%>%
 tabla_para_graficar_distinta_tasa <- data.frame( sexo = Primas_unicas$Sexo,
                                                  edad = Primas_unicas$Edad,
                                                  primas_normales = Primas_unicas$Primas,
-                                                 primas_tasa_aumentada = Primas_unicas_0.05$Primas)
+                                                 primas_tasa_aumentada = Primas_unicas_0.05$Primas,
+                                                 variación = (Primas_unicas_0.05$Primas-Primas_unicas$Primas)/Primas_unicas$Primas )
 
 tabla_distinta_tasa_hombres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Hombre", ]
 tabla_distinta_tasa_mujeres <- tabla_para_graficar_distinta_tasa[tabla_para_graficar_distinta_tasa$sexo == "Mujer", ]
+```
+
+
+```{r}
+tabla_latex_primas_unicas_hombres <- xtable(tabla_distinta_tasa_hombres)
+
+print(tabla_latex_primas_unicas_hombres)
+```
+
+```{r}
+tabla_latex_primas_unicas_hombres <- xtable(tabla_distinta_tasa_mujeres)
+
+print(tabla_latex_primas_unicas_hombres)
 ```
 
 ```{r,echo=FALSE}
